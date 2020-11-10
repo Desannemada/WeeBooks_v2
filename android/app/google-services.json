@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "759049735753",
+    "firebase_url": "https://weebooks-cdc8d.firebaseio.com",
+    "project_id": "weebooks-cdc8d",
+    "storage_bucket": "weebooks-cdc8d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:759049735753:android:511b41a9161991b2f7b998",
+        "android_client_info": {
+          "package_name": "com.desannemada.weebooks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "759049735753-kee17i8ap8doquhmvllfpl2i99i4dfbm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.desannemada.weebooks",
+            "certificate_hash": "83ef4bd445d850e0f46af849e7b2b0d0a7e7f873"
+          }
+        },
+        {
+          "client_id": "759049735753-lambp6svu38da06ulqiei0rjn0lht5fc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTUCSqFL7XwDmeiJ96xFWCqh-17WBYCkY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "759049735753-lambp6svu38da06ulqiei0rjn0lht5fc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
