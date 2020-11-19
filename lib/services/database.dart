@@ -5,6 +5,7 @@ import 'package:weebooks2/models/livro.dart';
 import 'package:weebooks2/models/meta.dart';
 import 'package:weebooks2/models/estatisticas.dart';
 import 'package:weebooks2/services/auth.dart';
+import 'package:weebooks2/ui/telas/biblioteca/widgets/status.dart';
 
 class DatabaseService {
   // coleção de usernames
@@ -34,14 +35,16 @@ class DatabaseService {
     DocumentReference userDatabase =
         (userCollection.doc(AuthService().getUserInfo().uid));
 
-    await userDatabase.get().then((value) {
+    return await userDatabase.get().then((value) {
       List livros = [];
       bool livroExiste = false;
       try {
         livros = value.get(FieldPath(['biblioteca', 'livros']));
         if (livros.isNotEmpty) {
-          if (livros.indexWhere((element) => element['id'] == livro.id) != -1) {
+          int index = livros.indexWhere((element) => element['id'] == livro.id);
+          if (index != -1) {
             livroExiste = true;
+            livros[index] = livro.toJson();
           }
         }
       } catch (e) {
@@ -65,26 +68,36 @@ class DatabaseService {
         print('ADD_BOOK: RECENTES - ' + e.toString());
       }
 
-      List categorias = [];
+      Map categorias = {};
       try {
-        categorias = value.get(FieldPath(['biblioteca', 'categorias']));
+        categorias = value.get(FieldPath(['biblioteca', 'categorias']))[0];
       } catch (e) {
         print('ADD_BOOK: CATEGORIAS - ' + e.toString());
       }
+      List<String> emptyCategories = [];
+      categorias.forEach((key, value) {
+        value.remove(livro.id);
+        if (value.isEmpty) emptyCategories.add(key);
+      });
+      for (var key in emptyCategories) {
+        categorias.remove(key);
+      }
       for (var sts in livro.status) {
-        if (!categorias.contains(sts.categoria)) {
-          categorias.add(sts.categoria);
+        if (categorias.containsKey(sts.categoria)) {
+          categorias[sts.categoria].add(livro.id);
+        } else {
+          categorias[sts.categoria] = [livro.id];
         }
       }
 
       if (!livroExiste) {
-        userDatabase.set({
+        return userDatabase.set({
           'biblioteca': {
             'livros': FieldValue.arrayUnion([livro.toJson()]),
             'recentes': recentes.isEmpty
                 ? FieldValue.arrayUnion([livro.toJson()])
                 : recentes,
-            'categorias': categorias,
+            'categorias': [categorias],
           },
           'paginasLidas': {'livros': FieldValue.increment(livro.pageCount)},
           'numeroLidos': {'livros': FieldValue.increment(1)},
@@ -96,18 +109,23 @@ class DatabaseService {
           return false;
         });
       } else {
-        userDatabase.set({
+        return userDatabase.set({
           'biblioteca': {
-            'livros': FieldValue.arrayUnion([livro.toJson()]),
+            'livros': livros.isEmpty
+                ? FieldValue.arrayUnion([livro.toJson()])
+                : livros,
+            'categorias': [categorias],
             'recentes': recentes.isEmpty
                 ? FieldValue.arrayUnion([livro.toJson()])
                 : recentes
           }
         }, SetOptions(merge: true)).then((value) {
           print("Livro, recente adicionados!");
+
           return true;
         }).catchError((e) {
-          print("ADD_BOOK: ADD EXISTING BOOK - !" + e.toString());
+          // throw e;
+          print("ADD_BOOK: ADD EXISTING BOOK - " + e.toString());
           return false;
         });
       }
@@ -130,6 +148,25 @@ class DatabaseService {
     return livros;
   }
 
+  Future<Livro> getBookById(String id) async {
+    return await userCollection
+        .doc(AuthService().getUserInfo().uid)
+        .get()
+        .then((value) {
+      List listaLivros = value.get(FieldPath(['biblioteca', 'livros']));
+      for (var livro in listaLivros) {
+        Livro aux = Livro.fromJson(livro);
+        if (aux.id == id) {
+          return aux;
+        }
+      }
+      return null;
+    }).catchError((error) {
+      print('GET BOOK BY ID: ' + error.toString());
+      return null;
+    });
+  }
+
   Future<dynamic> getStarted() async {
     bool docExists = await userCollection
         .doc(AuthService().getUserInfo().uid)
@@ -146,16 +183,16 @@ class DatabaseService {
         metaMensal: MetaMensal(metaAtual: 0, metaDefinida: 0, tipo: -1),
       ),
       <Livro>[],
-      <String>[],
+      <String, dynamic>{},
     ];
 
     List<dynamic> keys = [
-      ['biblioteca', 'recentes'],
-      'paginasLidas',
-      'numeroLidos',
-      'metas',
-      'buscasRecentes',
-      ['biblioteca', 'categorias']
+      ['biblioteca', 'recentes'], // 0
+      'paginasLidas', // 1
+      'numeroLidos', // 2
+      'metas', // 3
+      'buscasRecentes', // 4
+      ['biblioteca', 'categorias'] // 5
     ];
 
     if (docExists) {
@@ -189,16 +226,14 @@ class DatabaseService {
           }
         }
         if (checked[5]) {
-          for (var categoria in (data[keys[5][0]][keys[5][1]])) {
-            userInfo[5].add(categoria.toString());
-          }
+          userInfo[5] = data[keys[5][0]][keys[5][1]][0];
         }
       }).catchError((error) {
         print('GET STARTED: ' + error.toString());
         return null;
       });
     }
-    print(userInfo);
+    // print(userInfo);
     return userInfo;
   }
 
@@ -252,6 +287,8 @@ class DatabaseService {
     });
   }
 }
+
+Future<dynamic> atualizarStatusCategoria() async {}
 
 //-------------------------------------------------------------------------------
 

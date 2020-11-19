@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:weebooks2/models/livro.dart';
 import 'package:weebooks2/models/meta.dart';
 import 'package:weebooks2/models/estatisticas.dart';
+import 'package:weebooks2/models/status.dart';
 import 'package:weebooks2/services/database.dart';
 
 class UserViewModel with ChangeNotifier {
@@ -20,8 +21,8 @@ class UserViewModel with ChangeNotifier {
   List<Livro> _buscasRecentes = [];
   List<Livro> get buscasRecentes => _buscasRecentes;
 
-  List<String> _userCategorias = [];
-  List<String> get userCategorias => _userCategorias;
+  Map<String, dynamic> _userCategorias = {};
+  Map<String, dynamic> get userCategorias => _userCategorias;
 
   UserViewModel() {
     print("----------Starting UserViewModel------------");

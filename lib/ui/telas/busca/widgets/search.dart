@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/services/google_books.dart';
-import 'package:weebooks2/ui/shared/emDesenvolvimento.dart';
-import 'package:weebooks2/ui/shared/livro/livroWidget.dart';
+import 'package:weebooks2/ui/components/livro/livroWidget.dart';
 import 'package:weebooks2/ui/shared/loading.dart';
 import 'package:weebooks2/values/icons.dart';
 import 'package:weebooks2/values/values.dart';
@@ -20,7 +21,7 @@ class Search extends SearchDelegate {
 
   @override
   // String get searchFieldLabel => 'Encontre livros, fics, pessoas e grupos...';
-  String get searchFieldLabel => 'Encontre livros, fics, pessoas e grupos...';
+  String get searchFieldLabel => 'Encontre livros...';
 
   @override
   TextStyle get searchFieldStyle => TextStyle(color: Colors.white);
@@ -46,6 +47,7 @@ class Search extends SearchDelegate {
   @override
   Widget buildResults(BuildContext context) {
     if (query.isEmpty) return buildSuggestions(context);
+    final hmodel = Provider.of<HomeViewModel>(context);
 
     int queryLen = query.length;
     int currentIndex = 0;
@@ -58,14 +60,13 @@ class Search extends SearchDelegate {
     }
 
     return DefaultTabController(
-      length: 4,
+      length: 1,
       child: Builder(
         builder: (context) {
           final TabController tabController = DefaultTabController.of(context);
           if (isSugestion && currentIndex != 0) {
             tabController.animateTo(currentIndex);
           }
-
           return Column(
             children: [
               Container(
@@ -76,9 +77,9 @@ class Search extends SearchDelegate {
                   unselectedLabelColor: Colors.grey[500],
                   tabs: [
                     Tab(text: 'Livros'),
-                    Tab(text: 'Fics'),
-                    Tab(text: 'Pessoas'),
-                    Tab(text: 'Grupos'),
+                    // Tab(text: 'Fics'),
+                    // Tab(text: 'Pessoas'),
+                    // Tab(text: 'Grupos'),
                   ],
                 ),
               ),
@@ -87,7 +88,7 @@ class Search extends SearchDelegate {
                   physics: NeverScrollableScrollPhysics(),
                   children: [
                     FutureBuilder(
-                      future: GoogleBooks().buscaDeLivro(query),
+                      future: GoogleBooks().buscaDeLivro(query, context),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -122,9 +123,9 @@ class Search extends SearchDelegate {
                         }
                       },
                     ),
-                    EmDesenvolvimento(),
-                    EmDesenvolvimento(),
-                    EmDesenvolvimento(),
+                    // EmDesenvolvimento(),
+                    // EmDesenvolvimento(),
+                    // EmDesenvolvimento(),
                   ],
                 ),
               ),
@@ -139,9 +140,9 @@ class Search extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     List options = [
       [WeeBooks.cBook, 'em Livros'],
-      [WeeBooks.cFic, 'em Fics'],
-      [Icons.account_circle, 'em Pessoas'],
-      [Icons.group, 'em Grupos'],
+      // [WeeBooks.cFic, 'em Fics'],
+      // [Icons.account_circle, 'em Pessoas'],
+      // [Icons.group, 'em Grupos'],
     ];
 
     return Padding(

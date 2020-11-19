@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:weebooks2/_view_models/user_view_model.dart';
 import 'package:weebooks2/ui/shared/defaultButton.dart';
 
 class DefaultMessageDialog extends StatelessWidget {
@@ -14,8 +12,6 @@ class DefaultMessageDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userModel = Provider.of<UserViewModel>(context);
-
     return SimpleDialog(
       title: Container(
         padding: EdgeInsets.all(20),

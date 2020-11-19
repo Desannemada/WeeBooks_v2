@@ -85,6 +85,28 @@ class AuthService {
       return null;
     }
   }
+
+  //verify email
+  Future sendEmailVerification() async {
+    try {
+      await _auth.currentUser.sendEmailVerification();
+      return true;
+    } catch (e) {
+      print("EMAIL_VERIFICACAO: " + e.toString());
+      return false;
+    }
+  }
+
+  //reset password
+  Future resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return true;
+    } catch (e) {
+      print("RESET_PASSWORD: " + e.toString());
+      return false;
+    }
+  }
 }
 
 final homeKey = GlobalKey<HomeState>();
@@ -96,10 +118,7 @@ class Authenticate extends StatelessWidget {
 
     if (usuario == null) {
       return MenuInicial();
-    } else if (usuario.emailVerified) {
-      return Home(key: homeKey);
     } else {
-      // return EmailValidacao();
       return Home(key: homeKey);
     }
   }

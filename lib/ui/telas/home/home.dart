@@ -3,17 +3,16 @@ import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/_view_models/user_view_model.dart';
+import 'package:weebooks2/models/user.dart';
 
 import 'package:weebooks2/services/auth.dart';
 import 'package:weebooks2/services/database.dart';
-import 'package:weebooks2/teste.dart';
+import 'package:weebooks2/ui/shared/defaultMessageDialog.dart';
 import 'package:weebooks2/ui/shared/defaultScaffold.dart';
 import 'package:weebooks2/ui/shared/loading.dart';
 import 'package:weebooks2/ui/telas/biblioteca/biblioteca.dart';
 import 'package:weebooks2/ui/telas/busca/busca.dart';
-import 'package:weebooks2/ui/telas/feed/feed.dart';
 import 'package:weebooks2/ui/telas/home/widgets/homeButtonAnimation.dart';
-import 'package:weebooks2/ui/telas/perfil/perfil.dart';
 import 'package:weebooks2/values/icons.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:weebooks2/values/values.dart';
@@ -32,6 +31,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   List<AnimationController> get controllers => _controllers;
   int indexAtual;
   Future<bool> _future;
+  bool showVerifyDialog = false;
 
   @override
   void initState() {
@@ -57,19 +57,20 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final homeModel = Provider.of<HomeViewModel>(context);
     final userModel = Provider.of<UserViewModel>(context);
+    final usuario = Provider.of<Usuario>(context);
 
     return Stack(
       children: [
         DefaultScaffold(
           actions: [
             //TESTE BUTTON
-            IconButton(
-              icon: Icon(Icons.announcement),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Teste()),
-              ),
-            ),
+            // IconButton(
+            //   icon: Icon(Icons.announcement),
+            //   onPressed: () => Navigator.push(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => Teste()),
+            //   ),
+            // ),
             IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () => _auth.signOut(),
@@ -78,16 +79,16 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: indexAtual,
             onTap: (value) {
-              if (value != 2) {
+              if (value != 1) {
                 setState(() => indexAtual = value);
               }
             },
             items: [
               buildBottomNavigationBarItem("Biblioteca", WeeBooks.book),
-              buildBottomNavigationBarItem("Procurar", WeeBooks.search),
               BottomNavigationBarItem(title: Text(""), icon: Icon(Icons.add)),
-              buildBottomNavigationBarItem("Feed", WeeBooks.feed),
-              buildBottomNavigationBarItem("Perfil", WeeBooks.user),
+              buildBottomNavigationBarItem("Procurar", WeeBooks.search),
+              // buildBottomNavigationBarItem("Feed", WeeBooks.feed),
+              // buildBottomNavigationBarItem("Perfil", WeeBooks.user),
             ],
           ),
           body: FutureBuilder(
@@ -101,14 +102,28 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                   onRefresh: () async {
                     await userModel.getUserData();
                   },
-                  child: IndexedStack(
-                    index: indexAtual,
+                  child: Stack(
                     children: [
-                      Biblioteca(),
-                      Busca(),
-                      Container(),
-                      Feed(),
-                      Perfil()
+                      IndexedStack(
+                        index: indexAtual,
+                        children: [
+                          Biblioteca(),
+                          Container(),
+                          Busca(),
+                          // Feed(),
+                          // Perfil()
+                        ],
+                      ),
+                      !showVerifyDialog && !usuario.emailVerified
+                          ? Container(
+                              color: Colors.black.withOpacity(0.5),
+                              child: DefaultMessageDialog(
+                                title: "Verifique seu email",
+                                onPressed: () =>
+                                    setState(() => showVerifyDialog = true),
+                              ),
+                            )
+                          : Container(),
                     ],
                   ),
                 );

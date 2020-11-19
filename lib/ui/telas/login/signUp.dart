@@ -85,25 +85,25 @@ class _SignUpState extends State<SignUp> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              SizedBox(height: 20),
-                              Container(
-                                width: 100,
-                                height: 100,
-                                child: FlatButton(
-                                  onPressed: () {},
-                                  color: shadeGrey1.withOpacity(0.5),
-                                  shape: CircleBorder(
-                                    side: BorderSide(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    Icons.photo_camera,
-                                    color: Colors.white,
-                                    size: 50,
-                                  ),
-                                ),
-                              ),
+                              // SizedBox(height: 20),
+                              // Container(
+                              //   width: 100,
+                              //   height: 100,
+                              //   child: FlatButton(
+                              //     onPressed: () {},
+                              //     color: shadeGrey1.withOpacity(0.5),
+                              //     shape: CircleBorder(
+                              //       side: BorderSide(
+                              //         color: Colors.white,
+                              //       ),
+                              //     ),
+                              //     child: Icon(
+                              //       Icons.photo_camera,
+                              //       color: Colors.white,
+                              //       size: 50,
+                              //     ),
+                              //   ),
+                              // ),
                               Padding(
                                 padding: error.isNotEmpty
                                     ? EdgeInsets.only(bottom: 10, top: 20)

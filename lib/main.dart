@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/_view_models/login_model.dart';
@@ -48,6 +49,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'WeeBooks',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: [GlobalMaterialLocalizations.delegate],
+      supportedLocales: [const Locale('pt')],
       theme: ThemeData(
         primaryColor: primaryCyan,
         scaffoldBackgroundColor: Colors.white,

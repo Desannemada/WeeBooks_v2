@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weebooks2/models/livro.dart';
-import 'package:weebooks2/ui/shared/livro/livroCover.dart';
+import 'package:weebooks2/ui/components/livro/livroPerfil/livroCover.dart';
 import 'package:weebooks2/values/values.dart';
 
 class LivroPerfilMainInfo extends StatelessWidget {

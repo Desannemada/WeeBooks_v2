@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/user_view_model.dart';
 import 'package:weebooks2/models/livro.dart';
-import 'package:weebooks2/ui/shared/livro/livroCover.dart';
+import 'package:weebooks2/ui/components/livro/livroPerfil/livroCover.dart';
 
 class Recentes extends StatelessWidget {
   final double width = 95;

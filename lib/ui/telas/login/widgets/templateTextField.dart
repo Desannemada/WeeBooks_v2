@@ -56,7 +56,7 @@ class _TemplateTextFieldState extends State<TemplateTextField> {
             prefixIcon: Icon(
               widget.icon,
               color: currentColor,
-              size: 30,
+              size: 28,
             ),
             labelText: widget.titulo,
             errorText: widget.id < 2
@@ -64,7 +64,7 @@ class _TemplateTextFieldState extends State<TemplateTextField> {
                 : sovmodel.suvi[widget.id - 2].error,
             labelStyle: TextStyle(
               color: currentColor,
-              fontSize: 20,
+              fontSize: 18,
             ),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
@@ -72,7 +72,7 @@ class _TemplateTextFieldState extends State<TemplateTextField> {
               ),
             ),
           ),
-          style: TextStyle(height: 1.5, color: Colors.white, fontSize: 20),
+          style: TextStyle(height: 1.4, color: Colors.white, fontSize: 18),
           obscureText: ["Senha", "Confirmar Senha"].contains(widget.titulo)
               ? true
               : false,

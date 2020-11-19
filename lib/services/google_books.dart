@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/models/livro.dart';
 import 'package:weebooks2/services/apis/api.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +27,11 @@ class GoogleBooks extends API {
   final String volumeSearchURL =
       "https://www.googleapis.com/books/v1/volumes?q=";
 
-  Future<List<Livro>> buscaDeLivro(String input) async {
+  Future<List<Livro>> buscaDeLivro(String input, BuildContext context) async {
+    final hmodel = Provider.of<HomeViewModel>(context);
+    if (hmodel.ultimaQuery[0] == input) {
+      return hmodel.ultimaQuery[1];
+    }
     if (input == '') {
       return null;
     }
@@ -80,6 +87,7 @@ class GoogleBooks extends API {
     } else {
       print("\nErroStatus (Google Books): " + response.statusCode.toString());
     }
+    hmodel.setUltimaQuery(input, resultadoBusca);
     return resultadoBusca;
   }
 

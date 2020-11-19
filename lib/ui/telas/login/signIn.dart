@@ -5,6 +5,7 @@ import 'package:weebooks2/_view_models/sign_in_validation_model.dart';
 import 'package:weebooks2/services/auth.dart';
 import 'package:weebooks2/ui/shared/loading.dart';
 import 'package:weebooks2/ui/shared/defaultScaffold.dart';
+import 'package:weebooks2/ui/telas/login/validacao_reset/senhaReset.dart';
 import 'package:weebooks2/ui/telas/login/widgets/templateTextField.dart';
 import 'package:weebooks2/values/values.dart';
 
@@ -111,7 +112,14 @@ class _SignInState extends State<SignIn> {
                               SizedBox(height: 10),
                               Align(
                                 child: FlatButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SenhaReset(),
+                                      ),
+                                    );
+                                  },
                                   child: Text(
                                     "Esqueci minha senha",
                                     style: TextStyle(

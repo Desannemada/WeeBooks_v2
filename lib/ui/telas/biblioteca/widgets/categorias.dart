@@ -16,13 +16,13 @@ class Categorias extends StatelessWidget {
               image: "assets/categories/cBook.webp",
             ),
           ),
-          Expanded(
-            child: ItemCategoria(
-              title: "Fics",
-              color: accent2,
-              image: "assets/categories/cFic.webp",
-            ),
-          ),
+          // Expanded(
+          //   child: ItemCategoria(
+          //     title: "Fics",
+          //     color: accent2,
+          //     image: "assets/categories/cFic.webp",
+          //   ),
+          // ),
           Expanded(
             child: ItemCategoria(
               title: "E-Books",

@@ -7,6 +7,7 @@ class DefaultButton extends StatelessWidget {
     this.color = const Color(0xFFE0E0E0),
     this.radius = 5,
     this.onPressed,
+    this.replace,
   });
 
   final String label;
@@ -14,6 +15,7 @@ class DefaultButton extends StatelessWidget {
   final Color color;
   final double radius;
   final Function onPressed;
+  final Widget replace;
 
   final TextStyle defaultTS =
       TextStyle(color: Colors.black, fontFamily: 'Roboto', fontSize: 16);
@@ -21,7 +23,9 @@ class DefaultButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
-      child: Text(label, style: defaultTS.merge(textStyle)),
+      child: replace == null
+          ? Text(label, style: defaultTS.merge(textStyle))
+          : replace,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(radius),
       ),

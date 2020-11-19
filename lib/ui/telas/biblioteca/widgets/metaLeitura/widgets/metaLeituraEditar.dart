@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/_view_models/user_view_model.dart';
@@ -10,6 +9,7 @@ import 'package:weebooks2/ui/shared/defaultButton.dart';
 import 'package:weebooks2/ui/shared/defaultDialog.dart';
 import 'package:weebooks2/ui/shared/defaultMessageDialog.dart';
 import 'package:weebooks2/ui/shared/loading.dart';
+import 'package:weebooks2/ui/telas/biblioteca/widgets/metaLeitura/widgets/metaLeituraEditarIndividual.dart';
 import 'package:weebooks2/values/values.dart';
 
 class MetaLeituraEditar extends StatefulWidget {
@@ -43,7 +43,6 @@ class _MetaLeituraEditarState extends State<MetaLeituraEditar> {
     final homeModel = Provider.of<HomeViewModel>(context);
     final DatabaseService _data = DatabaseService();
 
-    // print(userModel.userMetas.metaDiaria);
     List<Meta> metas = [
       userModel.userMetas.metaDiaria,
       userModel.userMetas.metaMensal,
@@ -51,6 +50,11 @@ class _MetaLeituraEditarState extends State<MetaLeituraEditar> {
     ];
 
     if (start) {
+      List<String> tipos = [
+        metas[0].tipo == -1 ? '0' : metas[0].tipo.toString(),
+        metas[1].tipo == -1 ? '0' : metas[1].tipo.toString(),
+        metas[2].tipo == -1 ? '0' : metas[2].tipo.toString(),
+      ];
       setState(() {
         _controllerD =
             TextEditingController(text: metas[0].metaDefinida.toString());
@@ -58,9 +62,9 @@ class _MetaLeituraEditarState extends State<MetaLeituraEditar> {
             TextEditingController(text: metas[1].metaDefinida.toString());
         _controllerA =
             TextEditingController(text: metas[2].metaDefinida.toString());
-        _controllerDBD = TextEditingController(text: metas[0].tipo.toString());
-        _controllerDBM = TextEditingController(text: metas[1].tipo.toString());
-        _controllerDBA = TextEditingController(text: metas[2].tipo.toString());
+        _controllerDBD = TextEditingController(text: tipos[0]);
+        _controllerDBM = TextEditingController(text: tipos[1]);
+        _controllerDBA = TextEditingController(text: tipos[2]);
         start = false;
       });
     }
@@ -213,95 +217,6 @@ class _MetaLeituraEditarState extends State<MetaLeituraEditar> {
           loading ? Loading(opacity: true) : Container()
         ],
       ),
-    );
-  }
-}
-
-class MetaLeituraEditarIndividual extends StatefulWidget {
-  MetaLeituraEditarIndividual({
-    @required this.controller,
-    @required this.controllerDB,
-    @required this.title,
-    @required this.color,
-    @required this.meta,
-  });
-
-  final TextEditingController controller;
-  final TextEditingController controllerDB;
-  final String title;
-  final Color color;
-  final Meta meta;
-
-  @override
-  _MetaLeituraEditarIndividualState createState() =>
-      _MetaLeituraEditarIndividualState();
-}
-
-class _MetaLeituraEditarIndividualState
-    extends State<MetaLeituraEditarIndividual> {
-  final List<String> modos = ["minutos", "horas", "páginas", "livros"];
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 70,
-          child: Text(
-            widget.title,
-            style: TextStyle(fontSize: 18),
-          ),
-        ),
-        Container(
-          width: 100,
-          height: 40,
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: TextField(
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.zero,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                borderSide: BorderSide(
-                  color: widget.color,
-                  width: 2,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                borderSide: BorderSide(
-                  color: widget.color,
-                  width: 2,
-                ),
-              ),
-            ),
-            cursorColor: widget.color,
-            keyboardType: TextInputType.number,
-            inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-            controller: widget.controller,
-            textAlign: TextAlign.center,
-          ),
-        ),
-        DropdownButton(
-          onChanged: (newValue) {
-            setState(() {
-              widget.controllerDB.text = modos.indexOf(newValue).toString();
-            });
-          },
-          value: modos[int.parse(widget.controllerDB.text)],
-          items: List.generate(
-            modos.length,
-            (index) => DropdownMenuItem(
-              value: modos[index],
-              child: Text(modos[index]),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

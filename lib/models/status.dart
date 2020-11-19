@@ -1,7 +1,7 @@
 class Status {
-  final String title;
-  final String date;
-  final String categoria;
+  String title;
+  String date;
+  String categoria;
 
   Status({
     this.title,

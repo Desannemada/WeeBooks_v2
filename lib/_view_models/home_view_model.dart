@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:weebooks2/models/livro.dart';
+import 'package:weebooks2/models/status.dart';
+import 'package:weebooks2/services/database.dart';
 import 'package:weebooks2/ui/shared/defaultDialog.dart';
 import 'package:weebooks2/ui/telas/biblioteca/widgets/metaLeitura/widgets/metaLeituraAtualizar.dart';
 import 'package:weebooks2/ui/telas/biblioteca/widgets/metaLeitura/widgets/metaLeituraEditar.dart';
@@ -14,19 +16,19 @@ class HomeViewModel with ChangeNotifier {
         DefaultDialog(child: MetaLeituraEditar())
       ]
     ],
-    [
-      ["", ""],
-      [() {}, () {}]
-    ],
+    // [
+    //   ["", ""],
+    //   [() {}, () {}]
+    // ],
     [],
     [
       ["", ""],
       [() {}, () {}]
     ],
-    [
-      ["", ""],
-      [() {}, () {}]
-    ]
+    // [
+    //   ["", ""],
+    //   [() {}, () {}]
+    // ]
   ];
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -84,5 +86,53 @@ class HomeViewModel with ChangeNotifier {
     return DateFormat('yMMMMd', 'pt_BR').format(now);
   }
 
-  List<Livro> recentSearchs = [];
+  Future<dynamic> checkBook(livro) async {
+    final DatabaseService _data = DatabaseService();
+    Livro res = await _data.getBookById(livro.id);
+    if (res != null) {
+      return res.status;
+    }
+    return null;
+  }
+
+  List ultimaQuery = ["", []];
+  void setUltimaQuery(String query, List results) {
+    ultimaQuery = [query, results];
+    notifyListeners();
+  }
+
+  Livro currentLivro;
+  void setCurrentLivro(Livro livro) {
+    currentLivro = livro;
+    excludedStatus = [];
+    for (var _ in livro.status) {
+      excludedStatus.add(false);
+    }
+    notifyListeners();
+  }
+
+  List<bool> excludedStatus = [];
+  void setExcludedStatus(int index) {
+    excludedStatus[index] = !excludedStatus[index];
+    notifyListeners();
+  }
+
+  void updateCurrentLivroStatus(List<Status> listStatus, bool haveNewStatus) {
+    print("addCurrentLivroStatus");
+    List<Status> newListStatus = [];
+    if (haveNewStatus) {
+      newListStatus.add(listStatus.last);
+      listStatus = listStatus.sublist(0, listStatus.length - 1);
+    }
+    for (var i = 0; i < listStatus.length; i++) {
+      if (!excludedStatus[i]) {
+        newListStatus.add(listStatus[i]);
+      }
+    }
+
+    currentLivro.status = newListStatus;
+    excludedStatus = [];
+    newListStatus.forEach((element) => excludedStatus.add(false));
+    notifyListeners();
+  }
 }
