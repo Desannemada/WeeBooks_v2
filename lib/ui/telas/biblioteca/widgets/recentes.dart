@@ -1,17 +1,33 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/_view_models/user_view_model.dart';
 import 'package:weebooks2/models/livro.dart';
+import 'package:weebooks2/models/status.dart';
+import 'package:weebooks2/services/database.dart';
+import 'package:weebooks2/ui/components/livro/livroPerfil.dart';
 import 'package:weebooks2/ui/components/livro/livroPerfil/livroCover.dart';
+import 'package:weebooks2/ui/shared/loading.dart';
+import 'package:weebooks2/values/values.dart';
 
-class Recentes extends StatelessWidget {
+class Recentes extends StatefulWidget {
+  @override
+  _RecentesState createState() => _RecentesState();
+}
+
+class _RecentesState extends State<Recentes> {
+  final DatabaseService _data = DatabaseService();
   final double width = 95;
   final double height = 143;
 
+  bool isLoading = false;
+  int currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
-    final userModel = Provider.of<UserViewModel>(context);
+    final uModel = Provider.of<UserViewModel>(context);
+    final hModel = Provider.of<HomeViewModel>(context);
 
     return Container(
       width: double.infinity,
@@ -19,10 +35,9 @@ class Recentes extends StatelessWidget {
       child: CarouselSlider(
         options: CarouselOptions(
           viewportFraction: 0.26,
-          // enlargeCenterPage: true,
         ),
         items: List.generate(10, (index) {
-          List<Livro> recentes = userModel.userRecentes.reversed.toList();
+          List<Livro> recentes = uModel.userRecentes.reversed.toList();
           return index < recentes.length
               ? Card(
                   margin: EdgeInsets.zero,
@@ -40,15 +55,38 @@ class Recentes extends StatelessWidget {
                       children: [
                         EmptyRecentSlotContent(height, width),
                         LivroCover(
-                          coverURL: recentes[index].coverURL,
+                          coverURL: recentes[index].coverURL ?? "",
                           type: 1,
                         ),
+                        isLoading && currentIndex == index
+                            ? Loading(
+                                size: 30, opacity: true, borderRadius: 4.0)
+                            : Text(""),
                         FlatButton(
-                          color: Colors.transparent,
-                          padding: EdgeInsets.zero,
-                          child: Container(),
-                          onPressed: () {},
-                        ),
+                            color: Colors.transparent,
+                            padding: EdgeInsets.zero,
+                            child: Container(),
+                            onPressed: () async {
+                              setState(() {
+                                currentIndex = index;
+                                isLoading = true;
+                              });
+                              List<Status> res =
+                                  await hModel.checkBook(recentes[index]);
+                              if (res != null) {
+                                recentes[index].status = res;
+                              } else {
+                                recentes[index].status = [];
+                              }
+                              hModel.setCurrentLivro(recentes[index]);
+                              setState(() => isLoading = false);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LivroPerfil(),
+                                ),
+                              );
+                            }),
                       ],
                     ),
                   ),

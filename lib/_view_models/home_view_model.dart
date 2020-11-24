@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:weebooks2/models/livro.dart';
+import 'package:weebooks2/models/ebook.dart';
 import 'package:weebooks2/models/status.dart';
 import 'package:weebooks2/services/database.dart';
 import 'package:weebooks2/ui/shared/defaultDialog.dart';
+import 'package:weebooks2/ui/telas/biblioteca/biblioteca.dart';
 import 'package:weebooks2/ui/telas/biblioteca/widgets/metaLeitura/widgets/metaLeituraAtualizar.dart';
 import 'package:weebooks2/ui/telas/biblioteca/widgets/metaLeitura/widgets/metaLeituraEditar.dart';
 
@@ -20,16 +22,31 @@ class HomeViewModel with ChangeNotifier {
     //   ["", ""],
     //   [() {}, () {}]
     // ],
-    [],
+    // [],
     [
-      ["", ""],
-      [() {}, () {}]
+      ["Limpar Recentes"],
+      ["limparRecentes"]
     ],
     // [
     //   ["", ""],
     //   [() {}, () {}]
     // ]
   ];
+
+  Widget _bibliotecaWidget = Biblioteca();
+  Widget get bibliotecaWidget => _bibliotecaWidget;
+
+  void setBibliotecaWidget(Widget widget) {
+    _bibliotecaWidget = widget;
+    if (bibliotecaWidget is Biblioteca) {
+      displayFloatingButton = true;
+    } else {
+      displayFloatingButton = false;
+    }
+    notifyListeners();
+  }
+
+  bool displayFloatingButton = true;
 
   //--------------------------------------------------------------------------------------------------------------------
   bool buttonPressed = false;
@@ -95,6 +112,17 @@ class HomeViewModel with ChangeNotifier {
     return null;
   }
 
+  Future<Ebook> checkEbook(String name) async {
+    final DatabaseService _data = DatabaseService();
+    Ebook res = await _data.getEbookByName(name);
+    if (res != null) {
+      currentEbook = res;
+      notifyListeners();
+      return res;
+    }
+    return null;
+  }
+
   List ultimaQuery = ["", []];
   void setUltimaQuery(String query, List results) {
     ultimaQuery = [query, results];
@@ -111,9 +139,21 @@ class HomeViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  Ebook currentEbook;
+  void setCurrentEbook(Ebook ebook) {
+    currentEbook = ebook;
+    notifyListeners();
+  }
+
   List<bool> excludedStatus = [];
   void setExcludedStatus(int index) {
     excludedStatus[index] = !excludedStatus[index];
+    notifyListeners();
+  }
+
+  List<bool> excludedStatusE = [];
+  void setExcludedStatusE(int index) {
+    excludedStatusE[index] = !excludedStatusE[index];
     notifyListeners();
   }
 
@@ -133,6 +173,25 @@ class HomeViewModel with ChangeNotifier {
     currentLivro.status = newListStatus;
     excludedStatus = [];
     newListStatus.forEach((element) => excludedStatus.add(false));
+    notifyListeners();
+  }
+
+  void updateCurrentEbookStatus(List<Status> listStatus, bool haveNewStatus) {
+    print("addCurrentEbookStatus");
+    List<Status> newListStatus = [];
+    if (haveNewStatus) {
+      newListStatus.add(listStatus.last);
+      listStatus = listStatus.sublist(0, listStatus.length - 1);
+    }
+    for (var i = 0; i < listStatus.length; i++) {
+      if (!excludedStatus[i]) {
+        newListStatus.add(listStatus[i]);
+      }
+    }
+
+    currentEbook.status = newListStatus;
+    excludedStatusE = [];
+    newListStatus.forEach((element) => excludedStatusE.add(false));
     notifyListeners();
   }
 }

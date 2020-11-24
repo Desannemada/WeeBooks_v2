@@ -16,10 +16,11 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   //text field
-  TextEditingController _emailController;
-  TextEditingController _usuarioController;
-  TextEditingController _senhaController;
-  TextEditingController _confirmarSenhaController;
+  TextEditingController _emailController = TextEditingController(text: "");
+  TextEditingController _usuarioController = TextEditingController(text: "");
+  TextEditingController _senhaController = TextEditingController(text: "");
+  TextEditingController _confirmarSenhaController =
+      TextEditingController(text: "");
   final FocusNode _emailFocus = new FocusNode();
   final FocusNode _usuarioFocus = new FocusNode();
   final FocusNode _senhaFocus = new FocusNode();
@@ -175,7 +176,7 @@ class _SignUpState extends State<SignUp> {
                               });
                             } else if (await _data
                                 .createUsername(_usuarioController.text)) {
-                              Navigator.of(context).pop();
+                              Navigator.pop(context);
                               print("Registrado");
                             } else {
                               _auth.deletarUsuario();

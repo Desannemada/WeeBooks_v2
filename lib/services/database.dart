@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:weebooks2/models/ebook.dart';
 import 'package:weebooks2/models/livro.dart';
 import 'package:weebooks2/models/meta.dart';
 import 'package:weebooks2/models/estatisticas.dart';
 import 'package:weebooks2/services/auth.dart';
-import 'package:weebooks2/ui/telas/biblioteca/widgets/status.dart';
 
 class DatabaseService {
   // coleção de usernames
@@ -132,6 +132,108 @@ class DatabaseService {
     });
   }
 
+  Future<dynamic> addEbook(Ebook ebook) async {
+    DocumentReference userDatabase =
+        (userCollection.doc(AuthService().getUserInfo().uid));
+
+    return await userDatabase.get().then((value) {
+      List ebooks = [];
+      bool ebookExiste = false;
+      try {
+        ebooks = value.get(FieldPath(['biblioteca', 'ebooks']));
+        if (ebooks.isNotEmpty) {
+          int index =
+              ebooks.indexWhere((element) => element['title'] == ebook.title);
+          if (index != -1) {
+            ebookExiste = true;
+            ebooks[index] = ebook.toJson();
+          }
+        }
+      } catch (e) {
+        print('ADD_EBOOK: EBOOKS - ' + e.toString());
+      }
+
+      // List recentes = [];
+      // try {
+      //   recentes = value.get(FieldPath(['biblioteca', 'recentes']));
+      //   for (var rec in recentes) {
+      //     if (rec['id'] == livro.id) {
+      //       recentes.remove(rec);
+      //       break;
+      //     }
+      //   }
+      //   if (recentes.length == 10) {
+      //     recentes = recentes.sublist(1);
+      //   }
+      //   recentes.add(livro.toJson());
+      // } catch (e) {
+      //   print('ADD_BOOK: RECENTES - ' + e.toString());
+      // }
+
+      Map categorias = {};
+      try {
+        categorias = value.get(FieldPath(['biblioteca', 'categoriasE']))[0];
+      } catch (e) {
+        print('ADD_EBOOK: CATEGORIAS - ' + e.toString());
+      }
+      List<String> emptyCategories = [];
+      categorias.forEach((key, value) {
+        value.remove(ebook.title);
+        if (value.isEmpty) emptyCategories.add(key);
+      });
+      for (var key in emptyCategories) {
+        categorias.remove(key);
+      }
+      for (var sts in ebook.status) {
+        if (categorias.containsKey(sts.categoria)) {
+          categorias[sts.categoria].add(ebook.title);
+        } else {
+          categorias[sts.categoria] = [ebook.title];
+        }
+      }
+
+      if (!ebookExiste) {
+        return userDatabase.set({
+          'biblioteca': {
+            'livros': FieldValue.arrayUnion([ebook.toJson()]),
+            // 'recentes': recentes.isEmpty
+            //     ? FieldValue.arrayUnion([livro.toJson()])
+            //     : recentes,
+            'categoriasE': [categorias],
+          },
+          'paginasLidas': {'ebooks': FieldValue.increment(ebook.pageCount)},
+          'numeroLidos': {'ebooks': FieldValue.increment(1)},
+        }, SetOptions(merge: true)).then((value) {
+          print("Ebook, pags, numLidos, categorias adicionados!");
+          return true;
+        }).catchError((e) {
+          print("ADD_EBOOK: ADD NEW EBOOK - " + e.toString());
+          return false;
+        });
+      } else {
+        return userDatabase.set({
+          'biblioteca': {
+            'livros': ebooks.isEmpty
+                ? FieldValue.arrayUnion([ebook.toJson()])
+                : ebooks,
+            'categoriasE': [categorias],
+            // 'recentes': recentes.isEmpty
+            //     ? FieldValue.arrayUnion([livro.toJson()])
+            //     : recentes
+          }
+        }, SetOptions(merge: true)).then((value) {
+          print("Ebook, categorias adicionados!");
+
+          return true;
+        }).catchError((e) {
+          // throw e;
+          print("ADD_EBOOK: ADD EXISTING EBOOK - " + e.toString());
+          return false;
+        });
+      }
+    });
+  }
+
   Future<List<Livro>> getBooks() async {
     List<Livro> livros = [];
     await userCollection
@@ -167,6 +269,25 @@ class DatabaseService {
     });
   }
 
+  Future<Ebook> getEbookByName(String name) async {
+    return await userCollection
+        .doc(AuthService().getUserInfo().uid)
+        .get()
+        .then((value) {
+      List listaEbooks = value.get(FieldPath(['biblioteca', 'ebooks']));
+      for (var ebook in listaEbooks) {
+        Ebook aux = Ebook.fromJson(ebook);
+        if (aux.title == name) {
+          return aux;
+        }
+      }
+      return null;
+    }).catchError((error) {
+      print('GET EBOOK BY NAME: ' + error.toString());
+      return null;
+    });
+  }
+
   Future<dynamic> getStarted() async {
     bool docExists = await userCollection
         .doc(AuthService().getUserInfo().uid)
@@ -184,6 +305,9 @@ class DatabaseService {
       ),
       <Livro>[],
       <String, dynamic>{},
+      <Livro>[],
+      <Ebook>[],
+      <String, dynamic>{},
     ];
 
     List<dynamic> keys = [
@@ -192,7 +316,10 @@ class DatabaseService {
       'numeroLidos', // 2
       'metas', // 3
       'buscasRecentes', // 4
-      ['biblioteca', 'categorias'] // 5
+      ['biblioteca', 'categorias'], // 5
+      ['biblioteca', 'livros'], // 6
+      ['biblioteca', 'ebooks'], // 7
+      ['biblioteca', 'categoriasE'] // 8
     ];
 
     if (docExists) {
@@ -227,6 +354,23 @@ class DatabaseService {
         }
         if (checked[5]) {
           userInfo[5] = data[keys[5][0]][keys[5][1]][0];
+        }
+        if (checked[6]) {
+          for (var livro in (data[keys[6][0]][keys[6][1]])) {
+            userInfo[6].add(
+              Livro.fromJson(livro),
+            );
+          }
+        }
+        if (checked[7]) {
+          for (var ebook in (data[keys[7][0]][keys[7][1]])) {
+            userInfo[7].add(
+              Ebook.fromJson(ebook),
+            );
+          }
+        }
+        if (checked[8]) {
+          userInfo[8] = data[keys[8][0]][keys[8][1]][0];
         }
       }).catchError((error) {
         print('GET STARTED: ' + error.toString());
@@ -286,9 +430,21 @@ class DatabaseService {
       });
     });
   }
-}
 
-Future<dynamic> atualizarStatusCategoria() async {}
+  Future<bool> clearBuscasRecentes() async {
+    DocumentReference userDatabase =
+        (userCollection.doc(AuthService().getUserInfo().uid));
+
+    return await userDatabase
+        .set({'buscasRecentes': []}, SetOptions(merge: true)).then((value) {
+      print("Buscas Recentes Excluidas");
+      return true;
+    }).catchError((error) {
+      print("CLEAR_BUSCAS_RECENTES: " + error.toString());
+      return false;
+    });
+  }
+}
 
 //-------------------------------------------------------------------------------
 

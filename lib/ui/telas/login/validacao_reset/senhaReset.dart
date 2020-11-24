@@ -16,7 +16,7 @@ class _SenhaResetState extends State<SenhaReset> {
   bool isLoading = false;
   Map message = {'msg': "Enviar email"};
 
-  TextEditingController _controller;
+  TextEditingController _controller = TextEditingController(text: "");
   final FocusNode _emailFocus = new FocusNode();
   Color currentColor = Colors.white;
 

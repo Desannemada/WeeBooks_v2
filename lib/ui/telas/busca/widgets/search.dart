@@ -40,7 +40,7 @@ class Search extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
     return IconButton(
       icon: Icon(Icons.arrow_back),
-      onPressed: () => Navigator.of(context).pop(),
+      onPressed: () => Navigator.pop(context),
     );
   }
 
@@ -63,10 +63,10 @@ class Search extends SearchDelegate {
       length: 1,
       child: Builder(
         builder: (context) {
-          final TabController tabController = DefaultTabController.of(context);
-          if (isSugestion && currentIndex != 0) {
-            tabController.animateTo(currentIndex);
-          }
+          // final TabController tabController = DefaultTabController.of(context);
+          // if (isSugestion && currentIndex != 0) {
+          //   tabController.animateTo(currentIndex);
+          // }
           return Column(
             children: [
               Container(
@@ -89,23 +89,26 @@ class Search extends SearchDelegate {
                   children: [
                     FutureBuilder(
                       future: GoogleBooks().buscaDeLivro(query, context),
-                      builder: (context, snapshot) {
+                      builder: (context, AsyncSnapshot<List> snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return Loading(opacity: false, color: primaryCyan);
                         } else if (snapshot.hasData) {
-                          return ListView.separated(
-                            shrinkWrap: true,
-                            itemCount: snapshot.data.length,
-                            separatorBuilder: (context, index) => Divider(
-                              color: Colors.grey[400],
-                              indent: 20,
-                              endIndent: 20,
-                              height: 2,
-                            ),
-                            itemBuilder: (context, index) =>
-                                LivroWidget(livro: snapshot.data[index]),
-                          );
+                          var data = snapshot.data;
+                          if (data != null) {
+                            return ListView.separated(
+                              shrinkWrap: true,
+                              itemCount: data.length,
+                              separatorBuilder: (context, index) => Divider(
+                                color: Colors.grey[400],
+                                indent: 20,
+                                endIndent: 20,
+                                height: 2,
+                              ),
+                              itemBuilder: (context, index) =>
+                                  LivroWidget(livro: data[index]),
+                            );
+                          }
                         } else if (snapshot.data == null) {
                           return Center(
                             child: Text(
@@ -121,6 +124,7 @@ class Search extends SearchDelegate {
                             ),
                           );
                         }
+                        return Container();
                       },
                     ),
                     // EmDesenvolvimento(),

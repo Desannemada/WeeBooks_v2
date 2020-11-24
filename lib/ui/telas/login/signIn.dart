@@ -16,8 +16,8 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   //text field
-  TextEditingController _emailController;
-  TextEditingController _senhaController;
+  TextEditingController _emailController = TextEditingController(text: "");
+  TextEditingController _senhaController = TextEditingController(text: "");
   final FocusNode _emailFocus = new FocusNode();
   final FocusNode _senhaFocus = new FocusNode();
 
@@ -155,7 +155,7 @@ class _SignInState extends State<SignIn> {
                               loading = false;
                             });
                           } else {
-                            Navigator.of(context).pop();
+                            Navigator.pop(context);
                             print("Logado");
                           }
                         }

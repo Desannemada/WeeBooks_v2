@@ -4,24 +4,21 @@ import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/_view_models/user_view_model.dart';
 import 'package:weebooks2/values/values.dart';
 
-class LivroPerfilDropDown extends StatefulWidget {
-  LivroPerfilDropDown({@required this.controller});
+class EbookPerfilDropDown extends StatefulWidget {
+  EbookPerfilDropDown({@required this.controller});
 
   final TextEditingController controller;
 
   @override
-  _LivroPerfilDropDownState createState() => _LivroPerfilDropDownState();
+  _EbookPerfilDropDownState createState() => _EbookPerfilDropDownState();
 }
 
-class _LivroPerfilDropDownState extends State<LivroPerfilDropDown> {
+class _EbookPerfilDropDownState extends State<EbookPerfilDropDown> {
   List<String> defaultOptions = [
     'Nenhum',
-    'Possuo',
-    'Já Li',
     'Lendo',
+    'Já Li',
     'Quero Ler',
-    'Abandonado',
-    'Emprestado',
   ];
 
   @override
@@ -34,7 +31,7 @@ class _LivroPerfilDropDownState extends State<LivroPerfilDropDown> {
     // options.addAll(defaultOptions);
     for (var dOption in defaultOptions) {
       bool add = true;
-      for (var st in hModel.currentLivro.status) {
+      for (var st in hModel.currentEbook.status) {
         if (st.categoria == dOption) {
           add = false;
           break;
@@ -44,7 +41,7 @@ class _LivroPerfilDropDownState extends State<LivroPerfilDropDown> {
         options.add(dOption);
       }
     }
-    uModel.userCategorias.forEach((key, value) {
+    uModel.userCategoriasE.forEach((key, value) {
       if (!options.contains(key) && !defaultOptions.contains(key)) {
         options.add(key);
       }

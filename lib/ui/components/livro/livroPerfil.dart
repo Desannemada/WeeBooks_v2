@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/home_view_model.dart';
-import 'package:weebooks2/models/livro.dart';
-import 'package:weebooks2/services/database.dart';
 import 'package:weebooks2/ui/components/livro/livroPerfil/livroPerfilStatus.dart';
 import 'package:weebooks2/ui/components/livro/livroPerfil/livroPerfilDescricao.dart';
 import 'package:weebooks2/ui/components/livro/livroPerfil/livroPerfilMainInfo.dart';
@@ -11,10 +9,6 @@ import 'package:weebooks2/ui/shared/defaultScaffold.dart';
 import 'livroPerfilAddDialog.dart';
 
 class LivroPerfil extends StatelessWidget {
-  // LivroPerfil({@required this.livro});
-
-  // final Livro livro;
-
   @override
   Widget build(BuildContext context) {
     final hModel = Provider.of<HomeViewModel>(context);
@@ -26,12 +20,9 @@ class LivroPerfil extends StatelessWidget {
             icon: Icon(Icons.add),
             iconSize: 28,
             onPressed: () {
-              // hModel.setNewStatus([]);
               showDialog(
                 context: context,
-                builder: (context) => LivroPerfilAddDialog(
-                    // livro: hModel.currentLivro
-                    ),
+                builder: (context) => LivroPerfilAddDialog(),
               );
             })
       ],
@@ -54,7 +45,8 @@ class LivroPerfil extends StatelessWidget {
                 LivroPerfilStatus(),
                 SizedBox(height: 30),
                 LivroPerfilDescricao(
-                    descricao: hModel.currentLivro.description),
+                  descricao: hModel.currentLivro.description ?? "",
+                ),
               ],
             ),
           ),

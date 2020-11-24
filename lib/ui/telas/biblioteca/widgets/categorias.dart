@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:weebooks2/values/icons.dart';
+import 'package:provider/provider.dart';
+import 'package:weebooks2/_view_models/home_view_model.dart';
+import 'package:weebooks2/_view_models/user_view_model.dart';
+import 'package:weebooks2/ui/telas/biblioteca/widgets/conteudoBiblioteca/conteudoBibliotecaEbooks.dart';
+import 'package:weebooks2/ui/telas/biblioteca/widgets/conteudoBiblioteca/conteudoBibliotecaLivros.dart';
 import 'package:weebooks2/values/values.dart';
 
 class Categorias extends StatelessWidget {
@@ -16,13 +20,6 @@ class Categorias extends StatelessWidget {
               image: "assets/categories/cBook.webp",
             ),
           ),
-          // Expanded(
-          //   child: ItemCategoria(
-          //     title: "Fics",
-          //     color: accent2,
-          //     image: "assets/categories/cFic.webp",
-          //   ),
-          // ),
           Expanded(
             child: ItemCategoria(
               title: "E-Books",
@@ -49,6 +46,8 @@ class ItemCategoria extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hModel = Provider.of<HomeViewModel>(context);
+    final uModel = Provider.of<UserViewModel>(context);
     double height = MediaQuery.of(context).size.height / 5;
 
     return Padding(
@@ -95,7 +94,16 @@ class ItemCategoria extends StatelessWidget {
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: null,
-                onPressed: () {},
+                onPressed: () {
+                  title == "Livros"
+                      ? hModel.setBibliotecaWidget(
+                          ConteudoBibliotecaLivros(
+                              categorias: uModel.userCategorias),
+                        )
+                      : hModel.setBibliotecaWidget(ConteudoBibliotecaEbooks(
+                          categorias: uModel.userCategoriasE,
+                        ));
+                },
               ),
             )
           ],

@@ -84,25 +84,34 @@ class _MetaLeituraAtualizarState extends State<MetaLeituraAtualizar> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  MetaLeituraAtualizarIndividual(
-                    controller: _controllerD,
-                    title: 'Hoje',
-                    color: accent1,
-                    meta: metas[0],
-                  ),
-                  SizedBox(height: 10),
-                  MetaLeituraAtualizarIndividual(
-                    controller: _controllerM,
-                    title: 'Este mês',
-                    color: accent2,
-                    meta: metas[1],
-                  ),
-                  SizedBox(height: 10),
-                  MetaLeituraAtualizarIndividual(
-                    controller: _controllerA,
-                    title: 'Este ano',
-                    color: accent3,
-                    meta: metas[2],
+                  Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: MetaLeituraAtualizarIndividual(
+                          controller: _controllerD,
+                          title: 'Hoje',
+                          color: accent1,
+                          meta: metas[0],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: MetaLeituraAtualizarIndividual(
+                          controller: _controllerM,
+                          title: 'Este mês',
+                          color: accent2,
+                          meta: metas[1],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      MetaLeituraAtualizarIndividual(
+                        controller: _controllerA,
+                        title: 'Este ano',
+                        color: accent3,
+                        meta: metas[2],
+                      ),
+                    ],
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -196,54 +205,56 @@ class MetaLeituraAtualizarIndividual extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 80,
-          child: Text(
-            title,
-            style: TextStyle(fontSize: 18),
-          ),
-        ),
-        Container(
-          width: 100,
-          height: 40,
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: TextField(
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.zero,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                borderSide: BorderSide(
-                  color: color,
-                  width: 2,
+    return meta.tipo == -1
+        ? Text("Sem meta para: " + title)
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 80,
+                child: Text(
+                  title,
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                borderSide: BorderSide(
-                  color: color,
-                  width: 2,
+              Container(
+                width: 100,
+                height: 40,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: TextField(
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.zero,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                      borderSide: BorderSide(
+                        color: color,
+                        width: 2,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                      borderSide: BorderSide(
+                        color: color,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  cursorColor: color,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  controller: controller,
+                  textAlign: TextAlign.center,
                 ),
               ),
-            ),
-            cursorColor: color,
-            keyboardType: TextInputType.number,
-            inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-            controller: controller,
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Container(
-          width: 55,
-          child: Text(modos[meta.tipo]),
-        )
-      ],
-    );
+              Container(
+                width: 55,
+                child: Text(modos[meta.tipo]),
+              )
+            ],
+          );
   }
 }

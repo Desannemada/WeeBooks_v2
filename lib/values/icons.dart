@@ -22,4 +22,6 @@ class WeeBooks {
       IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData author =
       IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData swipe_left =
+      IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

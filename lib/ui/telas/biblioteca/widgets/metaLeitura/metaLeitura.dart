@@ -174,8 +174,11 @@ class MetaCirculoPercentual extends StatelessWidget {
     return CircularPercentIndicator(
       radius: config[id][0],
       lineWidth: 8.0,
-      percent:
-          percent.isNaN || percent == 0 ? 0.0001 : percent > 1 ? 1.0 : percent,
+      percent: percent.isNaN || percent == 0
+          ? 0.0001
+          : percent > 1
+              ? 1.0
+              : percent,
       backgroundColor: Colors.grey[50],
       circularStrokeCap: CircularStrokeCap.round,
       progressColor: config[id][1],

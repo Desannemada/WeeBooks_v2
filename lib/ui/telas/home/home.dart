@@ -1,16 +1,25 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/_view_models/user_view_model.dart';
+import 'package:weebooks2/models/ebook.dart';
+import 'package:weebooks2/models/status.dart';
 import 'package:weebooks2/models/user.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:weebooks2/services/auth.dart';
 import 'package:weebooks2/services/database.dart';
+import 'package:weebooks2/ui/components/ebook/ebookViewer.dart';
 import 'package:weebooks2/ui/shared/defaultMessageDialog.dart';
 import 'package:weebooks2/ui/shared/defaultScaffold.dart';
 import 'package:weebooks2/ui/shared/loading.dart';
 import 'package:weebooks2/ui/telas/biblioteca/biblioteca.dart';
+import 'package:weebooks2/ui/telas/biblioteca/widgets/conteudoBiblioteca/conteudoBibliotecaEbooks.dart';
+import 'package:weebooks2/ui/telas/biblioteca/widgets/conteudoBiblioteca/conteudoBibliotecaLivros.dart';
 import 'package:weebooks2/ui/telas/busca/busca.dart';
 import 'package:weebooks2/ui/telas/home/widgets/homeButtonAnimation.dart';
 import 'package:weebooks2/values/icons.dart';
@@ -32,6 +41,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   int indexAtual;
   Future<bool> _future;
   bool showVerifyDialog = false;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -71,21 +81,137 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
             //     MaterialPageRoute(builder: (context) => Teste()),
             //   ),
             // ),
-            IconButton(
-              icon: Icon(Icons.exit_to_app),
-              onPressed: () => _auth.signOut(),
-            ),
+            homeModel.bibliotecaWidget is Biblioteca
+                ? IconButton(
+                    icon: Icon(Icons.exit_to_app),
+                    onPressed: () => _auth.signOut(),
+                  )
+                : homeModel.bibliotecaWidget is ConteudoBibliotecaEbooks
+                    ? Container(
+                        margin: EdgeInsets.all(10),
+                        child: FlatButton(
+                          onPressed: () async {
+                            FilePickerResult result =
+                                await FilePicker.platform.pickFiles();
+                            if (result != null) {
+                              File file = File(result.files.single.path);
+                              String fileName = path
+                                  .basename(file.path)
+                                  .replaceAll('.pdf', '');
+
+                              if (file.path.contains('.pdf')) {
+                                print('pdf');
+                                Ebook ebook = new Ebook();
+                                setState(() => isLoading = true);
+                                Ebook res =
+                                    await homeModel.checkEbook(fileName);
+                                if (res != null) {
+                                  ebook = res;
+                                } else {
+                                  ebook.status = [];
+                                }
+                                homeModel.setCurrentEbook(ebook);
+                                // if (!widget.showStatus) {
+                                //   _data
+                                //       .atualizarBuscasRecentes(widget.livro)
+                                //       .then((value) =>
+                                //           uModel.getUserData(type: 4));
+                                // }
+                                setState(() => isLoading = false);
+
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => EbookViewer(
+                                      file: file,
+                                      showBook: res != null ? true : false,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+                                  ),
+                                );
+                              } else if (file.path.contains('.epub')) {
+                                print('epub');
+                              }
+                            }
+                          },
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(color: Colors.white),
+                          ),
+                          child: Text(
+                            "Novo Ebook",
+                            style: TextStyle(
+                                fontFamily: 'Roboto', color: Colors.white),
+                          ),
+                        ),
+                      )
+                    : Container()
           ],
+          floatingActionButton: homeModel.displayFloatingButton
+              ? Stack(
+                  alignment: Alignment.bottomRight,
+                  children: List.generate(
+                    homeModel.botaoPrincipalOpcoes[indexAtual][0].length + 2,
+                    (index) {
+                      int len =
+                          homeModel.botaoPrincipalOpcoes[indexAtual][0].length;
+                      return index == 0
+                          ? GestureDetector(
+                              onTap: () {
+                                homeModel.updateButtonPressed(_controllers);
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                height: double.infinity,
+                                color: homeModel.buttonPressed
+                                    ? Colors.transparent
+                                    : null,
+                              ),
+                            )
+                          : index > 0 && index <= len
+                              ? HomeButtonAnimation(
+                                  controller: _controllers[index - 1],
+                                  title:
+                                      homeModel.botaoPrincipalOpcoes[indexAtual]
+                                          [0][index - 1],
+                                  onPressed:
+                                      homeModel.botaoPrincipalOpcoes[indexAtual]
+                                          [1][index - 1],
+                                  edgeInsets: EdgeInsets.only(
+                                    bottom: (((index - 1) != 0 ? 60 : 65) *
+                                            ((index - 1) + 1))
+                                        .toDouble(),
+                                  ),
+                                )
+                              : FloatingActionButton(
+                                  shape: CircleBorder(
+                                    side: BorderSide(color: Colors.white),
+                                  ),
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 34,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    homeModel.updateButtonPressed(_controllers);
+                                  },
+                                );
+                    },
+                  ),
+                )
+              : null,
+          leading: homeModel.bibliotecaWidget is ConteudoBibliotecaLivros ||
+              homeModel.bibliotecaWidget is ConteudoBibliotecaEbooks,
+          leadingWidget: Biblioteca(),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: indexAtual,
             onTap: (value) {
-              if (value != 1) {
-                setState(() => indexAtual = value);
-              }
+              // if (value != 1) {
+              setState(() => indexAtual = value);
+              // }
             },
+            showSelectedLabels: true,
             items: [
               buildBottomNavigationBarItem("Biblioteca", WeeBooks.book),
-              BottomNavigationBarItem(title: Text(""), icon: Icon(Icons.add)),
+              // BottomNavigationBarItem(title: Text(""), icon: Icon(Icons.add)),
               buildBottomNavigationBarItem("Procurar", WeeBooks.search),
               // buildBottomNavigationBarItem("Feed", WeeBooks.feed),
               // buildBottomNavigationBarItem("Perfil", WeeBooks.user),
@@ -107,8 +233,8 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                       IndexedStack(
                         index: indexAtual,
                         children: [
-                          Biblioteca(),
-                          Container(),
+                          homeModel.bibliotecaWidget,
+                          // Container(),
                           Busca(),
                           // Feed(),
                           // Perfil()
@@ -124,6 +250,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                               ),
                             )
                           : Container(),
+                      isLoading ? Loading() : Container(),
                     ],
                   ),
                 );
@@ -137,53 +264,6 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
             },
           ),
         ),
-        GestureDetector(
-          onTap: () {
-            homeModel.updateButtonPressed(_controllers);
-          },
-          child: Container(
-            color: homeModel.buttonPressed ? Colors.transparent : null,
-          ),
-        ),
-        Stack(
-          children: List.generate(
-              homeModel.botaoPrincipalOpcoes[indexAtual][0].length, (index) {
-            return HomeButtonAnimation(
-              controller: _controllers[index],
-              title: homeModel.botaoPrincipalOpcoes[indexAtual][0][index],
-              onPressed: homeModel.botaoPrincipalOpcoes[indexAtual][1][index],
-              edgeInsets: EdgeInsets.only(
-                bottom: index < 2 ? 85.0 : 145.0,
-                right:
-                    index == 0 ? MediaQuery.of(context).size.width / 2.3 : 0.0,
-                left:
-                    index == 1 ? MediaQuery.of(context).size.width / 2.3 : 0.0,
-              ),
-            );
-          }),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            height: AppBar().preferredSize.height + 10,
-            child: FittedBox(
-              child: FloatingActionButton(
-                shape: CircleBorder(side: BorderSide(color: Colors.white)),
-                child: Icon(Icons.add, size: 34, color: Colors.white),
-                onPressed: () {
-                  homeModel.updateButtonPressed(_controllers);
-
-                  // List<Livro> livros =
-                  //     await GoogleBooks().buscaDeLivro("harry");
-                  // for (var i = 0; i < 1; i++) {
-                  //   await _data.addBook(livros[i + 9]);
-                  // }
-                  // await _data.atualizarMeta();
-                },
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -191,7 +271,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   BottomNavigationBarItem buildBottomNavigationBarItem(
       String title, IconData icon) {
     return BottomNavigationBarItem(
-      title: Text(title),
+      label: title,
       icon: Icon(
         icon,
       ),

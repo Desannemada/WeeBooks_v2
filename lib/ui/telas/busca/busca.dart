@@ -102,7 +102,8 @@ class _BuscaState extends State<Busca> {
                                               LivroCover(
                                                 type: 1,
                                                 coverURL:
-                                                    buscas[index].coverURL,
+                                                    buscas[index].coverURL ??
+                                                        "",
                                               ),
                                               Padding(
                                                 padding:
@@ -110,7 +111,7 @@ class _BuscaState extends State<Busca> {
                                                   vertical: 10,
                                                 ),
                                                 child: Text(
-                                                  buscas[index].title,
+                                                  buscas[index].title ?? "",
                                                   textAlign: TextAlign.center,
                                                 ),
                                               ),
@@ -133,7 +134,8 @@ class _BuscaState extends State<Busca> {
                                                 .then((value) => uModel
                                                     .getUserData(type: 4));
                                             setState(() => isLoading = false);
-                                            Navigator.of(context).push(
+                                            Navigator.push(
+                                              context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     LivroPerfil(),

@@ -30,9 +30,11 @@ class GoogleBooks extends API {
   Future<List<Livro>> buscaDeLivro(String input, BuildContext context) async {
     final hmodel = Provider.of<HomeViewModel>(context);
     if (hmodel.ultimaQuery[0] == input) {
+      print("Ultima Query");
       return hmodel.ultimaQuery[1];
     }
     if (input == '') {
+      print("Input vazio");
       return null;
     }
 
@@ -46,21 +48,26 @@ class GoogleBooks extends API {
       for (var i = 0; i < busca['items'].length; i++) {
         Map item = busca['items'][i];
         Map volumeInfo = item['volumeInfo'];
-
-        int pageCount = volumeInfo['pageCount'];
-        String coverURL = volumeInfo.containsKey('imageLinks') &&
-                volumeInfo['imageLinks'].containsKey('thumbnail')
-            ? volumeInfo['imageLinks']['thumbnail']
-            : 'assets/no-book-cover.png';
-        String publishedDate = volumeInfo['publishedDate'];
+        int pageCount;
+        String publishedDate;
+        String coverURL;
         try {
+          pageCount = volumeInfo['pageCount'];
+        } catch (e) {}
+        try {
+          coverURL = volumeInfo['imageLinks']['thumbnail'];
+          coverURL = coverURL.replaceAll('http', 'https');
+        } catch (e) {
+          coverURL = 'assets/no-book-cover.png';
+        }
+        try {
+          publishedDate = volumeInfo['publishedDate'];
           publishedDate = DateTime.parse(publishedDate).year.toString();
         } catch (e) {
           if (publishedDate == null || publishedDate.length != 4) {
             publishedDate = INDEFINIDO;
           }
         }
-
         if (pageCount != null) {
           resultadoBusca.add(Livro(
             authors: volumeInfo['authors'] ?? [],
@@ -76,7 +83,6 @@ class GoogleBooks extends API {
             status: [],
           ));
         }
-        // print(resultadoBusca.last.coverURL);
         for (var i = 0; i < resultadoBusca.last.authors.length; i++)
           resultadoBusca.last.authors[i] =
               capitalize(resultadoBusca.last.authors[i]);

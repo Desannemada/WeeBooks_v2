@@ -14,9 +14,9 @@ class Status extends StatelessWidget {
       margin: EdgeInsets.only(right: 0.1, left: 0.1, top: 0.05),
       child: Column(
         children: [
-          SpecificInfo(id: 0, title: "Nº Lidos"),
+          SpecificInfo(id: 0, title: "Em sua Biblioteca"),
           Container(height: 20, color: Colors.white),
-          SpecificInfo(id: 1, title: "Páginas Lidas"),
+          SpecificInfo(id: 1, title: "Total de Páginas"),
         ],
       ),
     );
@@ -36,7 +36,7 @@ class SpecificInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     List<dynamic> options = [
       [WeeBooks.cBook, accent1],
-      [WeeBooks.cFic, accent2],
+      // [WeeBooks.cFic, accent2],
       [WeeBooks.cEbook, accent3]
     ];
 
@@ -65,7 +65,7 @@ class SpecificInfo extends StatelessWidget {
             child: FractionallySizedBox(
               heightFactor: 0.5,
               child: Container(
-                width: 140,
+                width: 170,
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.3),
@@ -105,7 +105,7 @@ class SpecificInfo extends StatelessWidget {
                   elevation: 3,
                   child: Container(
                     height: 50,
-                    width: 100,
+                    width: 130,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(7),
                       color: Colors.white,
@@ -124,8 +124,8 @@ class SpecificInfo extends StatelessWidget {
                             child: Text(
                               hModel.formatNumber(index == 0
                                   ? info.livros
-                                  : index == 1 ? info.fics : info.ebooks),
-                              style: TextStyle(fontSize: 16),
+                                  : /*index == 1 ? info.fics :*/ info.ebooks),
+                              style: TextStyle(fontSize: 18),
                             ),
                           ),
                         ),
@@ -139,59 +139,5 @@ class SpecificInfo extends StatelessWidget {
         ],
       ),
     );
-    // return Row(
-    //   children: [
-    //     Container(
-    //       width: 100,
-    //       child: Text(
-    //         title,
-    //         style: TextStyle(fontSize: 16),
-    //       ),
-    //     ),
-    //     SizedBox(width: 15),
-    //     Expanded(
-    //       child: Row(
-    //         mainAxisAlignment: MainAxisAlignment.spaceAround,
-    //         children: List.generate(
-    //           3,
-    //           (index) {
-    //             return Expanded(
-    //               child: Container(
-    //                 margin: EdgeInsets.symmetric(horizontal: 5),
-    //                 child: Row(
-    //                   crossAxisAlignment: CrossAxisAlignment.center,
-    //                   children: [
-    //                     Icon(
-    //                       icons[index],
-    //                       color: colors[index],
-    //                       size: size,
-    //                     ),
-    //                     SizedBox(width: 5),
-    //                     Expanded(
-    //                       child: Container(
-    //                         decoration: BoxDecoration(
-    //                           color: colors[index].withOpacity(0.2),
-    //                           borderRadius:
-    //                               BorderRadiusDirectional.circular(10),
-    //                         ),
-    //                         alignment: Alignment.center,
-    //                         child: Text(
-    //                           formatNumber(index == 0
-    //                               ? info.livros
-    //                               : index == 1 ? info.fics : info.ebooks),
-    //                           style: TextStyle(fontSize: 15),
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ],
-    //                 ),
-    //               ),
-    //             );
-    //           },
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
   }
 }
