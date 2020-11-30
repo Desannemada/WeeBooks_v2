@@ -12,6 +12,7 @@ import 'package:path/path.dart' as path;
 
 import 'package:weebooks2/services/auth.dart';
 import 'package:weebooks2/ui/components/ebook/ebookViewer.dart';
+import 'package:weebooks2/ui/shared/defaultButton.dart';
 import 'package:weebooks2/ui/shared/defaultMessageDialog.dart';
 import 'package:weebooks2/ui/shared/defaultScaffold.dart';
 import 'package:weebooks2/ui/shared/loading.dart';
@@ -82,7 +83,10 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
             homeModel.bibliotecaWidget is Biblioteca
                 ? IconButton(
                     icon: Icon(Icons.exit_to_app),
-                    onPressed: () => _auth.signOut(),
+                    onPressed: () => showDialog(
+                      context: context,
+                      builder: (context) => ExitDialog(),
+                    ),
                   )
                 : homeModel.bibliotecaWidget is ConteudoBibliotecaEbooks
                     ? Container(
@@ -193,7 +197,11 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                                     color: Colors.white,
                                   ),
                                   onPressed: () {
-                                    homeModel.updateButtonPressed(_controllers);
+                                    if (!(!showVerifyDialog &&
+                                        !usuario.emailVerified)) {
+                                      homeModel
+                                          .updateButtonPressed(_controllers);
+                                    }
                                   },
                                 );
                     },
@@ -256,8 +264,10 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                               color: Colors.black.withOpacity(0.5),
                               child: DefaultValidateEmailDialog(
                                 title: "Verifique seu email",
-                                onPressed: () =>
-                                    setState(() => showVerifyDialog = true),
+                                onPressed: () async {
+                                  // setState(() => showVerifyDialog = true);
+                                  await _auth.signOut();
+                                },
                               ),
                             )
                           : Container(),
@@ -285,6 +295,47 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
       label: title,
       icon: Icon(
         icon,
+      ),
+    );
+  }
+}
+
+class ExitDialog extends StatelessWidget {
+  final AuthService _auth = AuthService();
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Deseja mesmo sair?",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                DefaultButton(
+                  label: "Não",
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                DefaultButton(
+                  label: "Sim",
+                  color: primaryCyan,
+                  textStyle: TextStyle(color: Colors.white),
+                  onPressed: () {
+                    _auth.signOut();
+                  },
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

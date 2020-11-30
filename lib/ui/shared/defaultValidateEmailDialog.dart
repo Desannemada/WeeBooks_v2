@@ -71,7 +71,7 @@ class _DefaultValidateEmailDialogState
             Padding(
               padding: EdgeInsets.only(bottom: 20, right: 20, left: 20),
               child: DefaultButton(
-                label: 'OK',
+                label: 'Relogar',
                 onPressed: widget.onPressed,
               ),
             ),
