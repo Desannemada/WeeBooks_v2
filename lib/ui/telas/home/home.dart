@@ -329,6 +329,7 @@ class ExitDialog extends StatelessWidget {
                   color: primaryCyan,
                   textStyle: TextStyle(color: Colors.white),
                   onPressed: () {
+                    Navigator.of(context).pop();
                     _auth.signOut();
                   },
                 ),
