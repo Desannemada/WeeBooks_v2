@@ -25,7 +25,7 @@ Desta forma, abre-se espaço para inovação, uma ferramenta que integre diversa
 
 ## Protipação:
 #### Uma pequena amostra interativa de como poderá vir a ser o produto final:
-> Em <a href="https://www.figma.com/file/2m0NmFM8qcF38daJI2rcuW/WeeBooks?node-id=0%3A1">Protipação Atual e Futura</a>
+> <a href="https://www.figma.com/file/2m0NmFM8qcF38daJI2rcuW/WeeBooks?node-id=0%3A1">Protipação Atual e Futura</a>
 
 ## Instalação:
 #### Para rodar o aplicativo será necessário: 
