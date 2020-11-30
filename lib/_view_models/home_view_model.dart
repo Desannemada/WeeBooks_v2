@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:weebooks2/models/livro.dart';
@@ -47,6 +49,21 @@ class HomeViewModel with ChangeNotifier {
   }
 
   bool displayFloatingButton = true;
+
+  bool showEbookPerfil = false;
+  void setShowEbookPerfil(bool aux) {
+    showEbookPerfil = aux;
+    notifyListeners();
+  }
+
+  void setEbookMarking(int page, bool contem) {
+    if (contem) {
+      currentEbook.markings.remove(page);
+    } else {
+      currentEbook.markings.add(page);
+    }
+    notifyListeners();
+  }
 
   //--------------------------------------------------------------------------------------------------------------------
   bool buttonPressed = false;
@@ -142,6 +159,16 @@ class HomeViewModel with ChangeNotifier {
   Ebook currentEbook;
   void setCurrentEbook(Ebook ebook) {
     currentEbook = ebook;
+    excludedStatusE = [];
+    for (var _ in ebook.status) {
+      excludedStatusE.add(false);
+    }
+    notifyListeners();
+  }
+
+  File currentEbookFile;
+  void setCurrentEbookFile(File file) {
+    currentEbookFile = file;
     notifyListeners();
   }
 
@@ -154,6 +181,18 @@ class HomeViewModel with ChangeNotifier {
   List<bool> excludedStatusE = [];
   void setExcludedStatusE(int index) {
     excludedStatusE[index] = !excludedStatusE[index];
+    notifyListeners();
+  }
+
+  bool openStatus = true;
+  bool openMetas = true;
+
+  setOpen(String title) {
+    if (title == "Status") {
+      openStatus = !openStatus;
+    } else {
+      openMetas = !openMetas;
+    }
     notifyListeners();
   }
 
@@ -184,7 +223,7 @@ class HomeViewModel with ChangeNotifier {
       listStatus = listStatus.sublist(0, listStatus.length - 1);
     }
     for (var i = 0; i < listStatus.length; i++) {
-      if (!excludedStatus[i]) {
+      if (!excludedStatusE[i]) {
         newListStatus.add(listStatus[i]);
       }
     }

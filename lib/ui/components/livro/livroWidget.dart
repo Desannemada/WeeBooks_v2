@@ -50,6 +50,7 @@ class _LivroWidgetState extends State<LivroWidget> {
         widget.livro.publisher == INDEFINIDO
       ],
       ['Categorias: ', categorias, categorias == INDEFINIDO],
+      // ['Páginas: ', widget.livro.pageCount.toString(), false],
     ];
 
     return Stack(
@@ -94,15 +95,21 @@ class _LivroWidgetState extends State<LivroWidget> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: LivroCover(
-                        coverURL: widget.livro.coverURL,
-                        borderRadius: 5,
-                        boxFit: BoxFit.fitWidth,
-                      ),
+                    Column(
+                      children: [
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: LivroCover(
+                            coverURL: widget.livro.coverURL,
+                            borderRadius: 5,
+                            boxFit: BoxFit.fitWidth,
+                          ),
+                        ),
+                        SizedBox(height: 3),
+                        Text(widget.livro.pageCount.toString() + " páginas")
+                      ],
                     ),
                     SizedBox(width: 20),
                     Expanded(
@@ -122,11 +129,11 @@ class _LivroWidgetState extends State<LivroWidget> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: List.generate(
-                              4,
+                              options.length,
                               (index) {
                                 return Padding(
-                                  padding: index != 3
-                                      ? EdgeInsets.only(bottom: 5)
+                                  padding: index != 4
+                                      ? EdgeInsets.only(bottom: 8)
                                       : EdgeInsets.all(0.0),
                                   child: RichText(
                                     text: TextSpan(

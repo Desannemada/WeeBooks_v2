@@ -26,11 +26,17 @@ class TemplateTextField extends StatefulWidget {
 
 class _TemplateTextFieldState extends State<TemplateTextField> {
   Color currentColor = Colors.white;
+  bool isObscure;
 
   @override
   void initState() {
     super.initState();
     widget.focusNode[0].addListener(_onFocusChange);
+    if (["Senha", "Confirmar Senha"].contains(widget.titulo)) {
+      isObscure = true;
+    } else {
+      isObscure = false;
+    }
   }
 
   void _onFocusChange() {
@@ -73,12 +79,12 @@ class _TemplateTextFieldState extends State<TemplateTextField> {
             ),
           ),
           style: TextStyle(height: 1.4, color: Colors.white, fontSize: 18),
-          obscureText: ["Senha", "Confirmar Senha"].contains(widget.titulo)
-              ? true
-              : false,
-          onChanged: (String value) => widget.id < 2
-              ? sivmodel.updateItem(value, widget.id)
-              : sovmodel.updateItem(value, widget.id - 2),
+          obscureText: isObscure,
+          onChanged: (String value) {
+            widget.id < 2
+                ? sivmodel.updateItem(value, widget.id)
+                : sovmodel.updateItem(value, widget.id - 2);
+          },
           onFieldSubmitted: (value) {
             if (widget.focusNode[1] != null) {
               menuViewModel.fieldFocusChange(

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/home_view_model.dart';
-import 'package:weebooks2/_view_models/user_view_model.dart';
-import 'package:weebooks2/models/status.dart';
 
 class LivroPerfilStatus extends StatefulWidget {
   LivroPerfilStatus({
@@ -17,15 +15,9 @@ class LivroPerfilStatus extends StatefulWidget {
 }
 
 class _LivroPerfilStatusState extends State<LivroPerfilStatus> {
-  // List<bool> isExcluded = [];
-
   @override
   Widget build(BuildContext context) {
     final hModel = Provider.of<HomeViewModel>(context);
-
-    // for (var _ in hModel.currentLivro.status) {
-    //   isExcluded.add(false);
-    // }
 
     List<double> fontSizes = [];
     if (widget.type == 0) {

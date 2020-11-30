@@ -16,6 +16,8 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   //text field
+  final AuthService _auth = AuthService();
+  final _formKey = GlobalKey<FormState>();
   TextEditingController _emailController = TextEditingController(text: "");
   TextEditingController _senhaController = TextEditingController(text: "");
   final FocusNode _emailFocus = new FocusNode();
@@ -43,7 +45,6 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthService _auth = AuthService();
     final sivmodel = Provider.of<SignInValidationModel>(context);
     final lmodel = Provider.of<LoginViewModel>(context);
 
@@ -52,6 +53,7 @@ class _SignInState extends State<SignIn> {
         DefaultScaffold(
           backgroundColor: secondaryPink,
           body: Form(
+            key: _formKey,
             child: Container(
               height: double.infinity,
               width: double.infinity,

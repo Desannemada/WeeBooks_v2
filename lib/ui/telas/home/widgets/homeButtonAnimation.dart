@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/_view_models/user_view_model.dart';
 import 'package:weebooks2/services/database.dart';
 import 'package:weebooks2/ui/shared/defaultDialog.dart';
@@ -134,7 +133,6 @@ class HomeButtonAnimation extends StatelessWidget {
           onPressed: !isDialog
               ? methods[onPressed]
               : () {
-                  // print(uModel.userMetas.toJson());
                   showDialog(context: context, builder: (context) => onPressed);
                 },
         ),

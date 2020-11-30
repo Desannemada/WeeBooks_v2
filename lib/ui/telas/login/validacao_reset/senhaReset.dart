@@ -147,9 +147,11 @@ class _SenhaResetState extends State<SenhaReset> {
                           }
                           setState(() => isLoading = false);
                           Timer(Duration(seconds: 3), () {
-                            setState(() {
-                              message['msg'] = "Enviar novamente";
-                            });
+                            setState(
+                              () {
+                                message['msg'] = "Enviar novamente";
+                              },
+                            );
                           });
                         }
                       },
@@ -164,30 +166,3 @@ class _SenhaResetState extends State<SenhaReset> {
     );
   }
 }
-
-// isPressed
-//                       ? Container(
-//                           alignment: Alignment.center,
-//                           child: !isLoading
-//                               ? Container(
-//                                   margin: EdgeInsets.only(
-//                                       bottom: 30, left: 30, right: 30),
-//                                   padding: EdgeInsets.all(8),
-//                                   decoration: BoxDecoration(
-//                                     color: Colors.white,
-//                                     borderRadius: BorderRadius.circular(7),
-//                                   ),
-//                                   child: Text(
-//                                     message['msg'],
-//                                     textAlign: TextAlign.justify,
-//                                     style: TextStyle(
-//                                       color: message['color'],
-//                                       fontSize: 14,
-//                                     ),
-//                                   ),
-//                                 )
-//                               : Loading(
-//                                   opacity: false,
-//                                 ),
-//                         )
-//                       : Container(),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/ui/telas/biblioteca/widgets/categorias.dart';
 import 'package:weebooks2/ui/telas/biblioteca/widgets/metaLeitura/metaLeitura.dart';
 import 'package:weebooks2/ui/telas/biblioteca/widgets/recentes.dart';
@@ -60,18 +62,21 @@ class BibliotecaWidget extends StatefulWidget {
 }
 
 class _BibliotecaWidgetState extends State<BibliotecaWidget> {
-  bool isOpen = true;
+  // bool isOpen = true;
 
   @override
   Widget build(BuildContext context) {
+    final hModel = Provider.of<HomeViewModel>(context);
+
     return Column(
       children: [
         SizedBox(height: 15),
         GestureDetector(
           onTap: () {
-            setState(() {
-              isOpen = !isOpen;
-            });
+            // setState(() {
+            //   isOpen = !isOpen;
+            // });
+            hModel.setOpen(widget.title);
           },
           child: Container(
             color: Colors.white,
@@ -96,11 +101,11 @@ class _BibliotecaWidgetState extends State<BibliotecaWidget> {
                                 "Mostrar",
                                 style: TextStyle(color: Colors.black),
                               ),
-                              Icon(
-                                isOpen
-                                    ? Icons.keyboard_arrow_down
-                                    : Icons.keyboard_arrow_left,
-                              )
+                              Icon((widget.title == "Status"
+                                      ? hModel.openStatus
+                                      : hModel.openMetas)
+                                  ? Icons.keyboard_arrow_down
+                                  : Icons.keyboard_arrow_left)
                             ],
                           ),
                         )
@@ -121,7 +126,10 @@ class _BibliotecaWidgetState extends State<BibliotecaWidget> {
   }
 
   Widget buildBibliotecaWidget() {
-    return isOpen
+    final hModel = Provider.of<HomeViewModel>(context);
+    return (widget.title == "Status"
+            ? hModel.openStatus
+            : (widget.title == "Metas de Leitura" ? hModel.openMetas : true))
         ? Column(
             children: [
               SizedBox(height: 15),

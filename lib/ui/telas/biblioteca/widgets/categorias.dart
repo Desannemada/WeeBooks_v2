@@ -100,9 +100,11 @@ class ItemCategoria extends StatelessWidget {
                           ConteudoBibliotecaLivros(
                               categorias: uModel.userCategorias),
                         )
-                      : hModel.setBibliotecaWidget(ConteudoBibliotecaEbooks(
-                          categorias: uModel.userCategoriasE,
-                        ));
+                      : hModel.setBibliotecaWidget(
+                          ConteudoBibliotecaEbooks(
+                            categorias: uModel.userCategoriasE,
+                          ),
+                        );
                 },
               ),
             )

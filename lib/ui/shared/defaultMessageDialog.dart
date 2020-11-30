@@ -14,7 +14,7 @@ class DefaultMessageDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleDialog(
       title: Container(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(15),
         child: Text(
           title,
           textAlign: TextAlign.center,

@@ -24,4 +24,10 @@ class WeeBooks {
       IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData swipe_left =
       IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData pdf =
+      IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData epub =
+      IconData(0xe80a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData isbn =
+      IconData(0xe80b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

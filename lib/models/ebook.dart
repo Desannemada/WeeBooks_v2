@@ -7,6 +7,7 @@ class Ebook {
   List<Status> status;
   int lastPage;
   String path;
+  List markings;
 
   Ebook({
     // this.id,
@@ -15,6 +16,7 @@ class Ebook {
     this.status,
     this.lastPage,
     this.path,
+    this.markings,
   });
 
   factory Ebook.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class Ebook {
       lastPage: json['lastPage'],
       status: status,
       path: json['path'],
+      markings: json['markings'],
     );
   }
 
@@ -48,6 +51,7 @@ class Ebook {
       'lastPage': lastPage,
       'status': sts,
       'path': path,
+      'markings': markings,
     };
   }
 

@@ -5,11 +5,9 @@ import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/_view_models/user_view_model.dart';
 import 'package:weebooks2/models/livro.dart';
 import 'package:weebooks2/models/status.dart';
-import 'package:weebooks2/services/database.dart';
 import 'package:weebooks2/ui/components/livro/livroPerfil.dart';
 import 'package:weebooks2/ui/components/livro/livroPerfil/livroCover.dart';
 import 'package:weebooks2/ui/shared/loading.dart';
-import 'package:weebooks2/values/values.dart';
 
 class Recentes extends StatefulWidget {
   @override
@@ -17,7 +15,6 @@ class Recentes extends StatefulWidget {
 }
 
 class _RecentesState extends State<Recentes> {
-  final DatabaseService _data = DatabaseService();
   final double width = 95;
   final double height = 143;
 

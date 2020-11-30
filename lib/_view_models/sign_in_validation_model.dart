@@ -51,6 +51,8 @@ class SignInValidationModel with ChangeNotifier {
           {
             if (value != "") {
               sivi[1] = SignInValidationItem(value, null);
+            } else {
+              print("teste");
             }
           }
           break;

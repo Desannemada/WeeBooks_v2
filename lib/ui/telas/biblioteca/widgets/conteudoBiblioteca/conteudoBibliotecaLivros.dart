@@ -21,7 +21,9 @@ class _ConteudoBibliotecaLivrosState extends State<ConteudoBibliotecaLivros> {
   List<List<dynamic>> defaultCategorias = [
     ['Possuo', false],
     ['Já Li', false],
+    ['Lendo', false],
     ['Quero Ler', false],
+    ['Relido', false],
     ['Abandonado', false],
     ['Emprestado', false],
   ];

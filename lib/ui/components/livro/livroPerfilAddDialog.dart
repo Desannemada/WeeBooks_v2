@@ -152,7 +152,6 @@ class _LivroPerfilAddDialogState extends State<LivroPerfilAddDialog> {
                           status.title = _controllerDropDown.text;
                         }
                       }
-
                       listStatus.add(status);
                       hModel.updateCurrentLivroStatus(listStatus, true);
                       reset();
@@ -175,6 +174,9 @@ class _LivroPerfilAddDialogState extends State<LivroPerfilAddDialog> {
                                   ? "Adicionado com sucesso!"
                                   : "Ocorreu um erro, tenten novamente!",
                               onPressed: () {
+                                if (!value) {
+                                  hModel.currentLivro.status.removeLast();
+                                }
                                 Navigator.of(context).pop();
                               },
                             ),

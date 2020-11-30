@@ -44,6 +44,23 @@ class LivroPerfil extends StatelessWidget {
                 SizedBox(height: 30),
                 LivroPerfilStatus(),
                 SizedBox(height: 30),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Páginas",
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    Text(
+                      hModel.currentLivro.pageCount.toString() + " páginas",
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
                 LivroPerfilDescricao(
                   descricao: hModel.currentLivro.description ?? "",
                 ),

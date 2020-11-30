@@ -251,7 +251,7 @@ class MetaLeituraAtualizarIndividual extends StatelessWidget {
                 ),
               ),
               Container(
-                width: 55,
+                width: 60,
                 child: Text(modos[meta.tipo]),
               )
             ],

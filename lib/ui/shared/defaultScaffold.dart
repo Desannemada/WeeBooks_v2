@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/ui/shared/Logo.dart';
-import 'package:weebooks2/values/values.dart';
 
 class DefaultScaffold extends StatelessWidget {
   DefaultScaffold({
@@ -30,13 +29,15 @@ class DefaultScaffold extends StatelessWidget {
     final hModel = Provider.of<HomeViewModel>(context);
     return Scaffold(
       backgroundColor: backgroundColor != null ? backgroundColor : Colors.white,
+      // resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         leading: leading
             ? IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () => leadingWidget == null
                     ? Navigator.of(context).pop()
-                    : hModel.setBibliotecaWidget(leadingWidget))
+                    : hModel.setBibliotecaWidget(leadingWidget),
+              )
             : null,
         centerTitle: true,
         title: titulo != null

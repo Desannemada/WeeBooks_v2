@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/home_view_model.dart';
@@ -6,8 +7,10 @@ import 'package:weebooks2/_view_models/user_view_model.dart';
 import 'package:weebooks2/models/livro.dart';
 import 'package:weebooks2/models/status.dart';
 import 'package:weebooks2/services/database.dart';
+import 'package:weebooks2/services/google_books.dart';
 import 'package:weebooks2/ui/components/livro/livroPerfil/livroCover.dart';
 import 'package:weebooks2/ui/components/livro/livroPerfil.dart';
+import 'package:weebooks2/ui/shared/defaultMessageDialog.dart';
 import 'package:weebooks2/ui/shared/loading.dart';
 import 'package:weebooks2/ui/telas/busca/widgets/search.dart';
 import 'package:weebooks2/values/icons.dart';
@@ -50,22 +53,76 @@ class _BuscaState extends State<Busca> {
                 margin: EdgeInsets.only(top: 10, right: 10, left: 10),
                 child: Column(
                   children: [
-                    TextField(
-                      readOnly: true,
-                      cursorColor: primaryCyan,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.zero,
-                        prefixIcon:
-                            Icon(WeeBooks.search, color: Colors.grey[600]),
-                        // hintText: 'Encontre livros, fics, pessoas e grupos...',
-                        hintText: 'Encontre livros...',
-                        hintStyle: TextStyle(color: Colors.grey[600]),
-                        enabledBorder: border,
-                        focusedBorder: border,
-                      ),
-                      onTap: () {
-                        showSearch(context: context, delegate: Search());
-                      },
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            readOnly: true,
+                            cursorColor: primaryCyan,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.zero,
+                              prefixIcon: Icon(WeeBooks.search,
+                                  color: Colors.grey[600]),
+                              // hintText: 'Encontre livros, fics, pessoas e grupos...',
+                              hintText: 'Encontre livros...',
+                              hintStyle: TextStyle(color: Colors.grey[600]),
+                              enabledBorder: border,
+                              focusedBorder: border,
+                            ),
+                            onTap: () {
+                              showSearch(context: context, delegate: Search());
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(WeeBooks.isbn, color: primaryCyan),
+                          tooltip: "Scanner de ISBN",
+                          onPressed: () async {
+                            String isbnCode;
+                            isbnCode = await FlutterBarcodeScanner.scanBarcode(
+                                "#28878B", "Cancelar", true, ScanMode.DEFAULT);
+                            if (isbnCode != '-1') {
+                              setState(() => isLoading = true);
+                              List<Livro> livro = await GoogleBooks()
+                                  .buscaDeLivro("isbn", null, isbnCode);
+                              if (livro.isNotEmpty) {
+                                Livro currentLivro = livro[0];
+
+                                List<Status> res =
+                                    await hModel.checkBook(currentLivro);
+                                if (res != null) {
+                                  currentLivro.status = res;
+                                } else {
+                                  currentLivro.status = [];
+                                }
+                                hModel.setCurrentLivro(currentLivro);
+                                _data
+                                    .atualizarBuscasRecentes(currentLivro)
+                                    .then(
+                                        (value) => uModel.getUserData(type: 4));
+
+                                setState(() => isLoading = false);
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => LivroPerfil(),
+                                  ),
+                                );
+                              } else {
+                                setState(() => isLoading = false);
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => DefaultMessageDialog(
+                                    title:
+                                        "Livro não encontrado ou indisponível",
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        )
+                      ],
                     ),
                     uModel.buscasRecentes.isNotEmpty
                         ? Expanded(

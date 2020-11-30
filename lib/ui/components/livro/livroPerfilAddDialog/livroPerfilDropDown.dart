@@ -20,6 +20,7 @@ class _LivroPerfilDropDownState extends State<LivroPerfilDropDown> {
     'Já Li',
     'Lendo',
     'Quero Ler',
+    'Relido',
     'Abandonado',
     'Emprestado',
   ];
@@ -35,7 +36,7 @@ class _LivroPerfilDropDownState extends State<LivroPerfilDropDown> {
     for (var dOption in defaultOptions) {
       bool add = true;
       for (var st in hModel.currentLivro.status) {
-        if (st.categoria == dOption) {
+        if (st.categoria == dOption && st.categoria != 'Relido') {
           add = false;
           break;
         }

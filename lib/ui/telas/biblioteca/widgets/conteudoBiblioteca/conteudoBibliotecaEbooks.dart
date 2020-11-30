@@ -92,7 +92,6 @@ class _ConteudoBibliotecaEbooksState extends State<ConteudoBibliotecaEbooks> {
     final uModel = Provider.of<UserViewModel>(context);
 
     updateCategorias(uModel.userCategoriasE);
-
     List<Ebook> ebooksFiltrados = [];
     if (filtros.isEmpty) {
       ebooksFiltrados = uModel.userEbooks;
@@ -131,14 +130,14 @@ class _ConteudoBibliotecaEbooksState extends State<ConteudoBibliotecaEbooks> {
               separatorBuilder: (context, index) => SizedBox(width: 8),
               itemBuilder: (context, index) => FlatButton(
                 onPressed: () {
-                  // setState(() {
-                  //   defaultCategorias[index][1] = !defaultCategorias[index][1];
-                  //   if (!filtros.contains(defaultCategorias[index][0])) {
-                  //     filtros.add(defaultCategorias[index][0]);
-                  //   } else {
-                  //     filtros.remove(defaultCategorias[index][0]);
-                  //   }
-                  // });
+                  setState(() {
+                    defaultCategorias[index][1] = !defaultCategorias[index][1];
+                    if (!filtros.contains(defaultCategorias[index][0])) {
+                      filtros.add(defaultCategorias[index][0]);
+                    } else {
+                      filtros.remove(defaultCategorias[index][0]);
+                    }
+                  });
                 },
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 shape: RoundedRectangleBorder(
@@ -173,15 +172,15 @@ class _ConteudoBibliotecaEbooksState extends State<ConteudoBibliotecaEbooks> {
                     separatorBuilder: (context, index) => SizedBox(width: 8),
                     itemBuilder: (context, index) => FlatButton(
                       onPressed: () {
-                        // setState(() {
-                        //   customCategorias[index][1] =
-                        //       !customCategorias[index][1];
-                        //   if (!filtros.contains(customCategorias[index][0])) {
-                        //     filtros.add(customCategorias[index][0]);
-                        //   } else {
-                        //     filtros.remove(customCategorias[index][0]);
-                        //   }
-                        // });
+                        setState(() {
+                          customCategorias[index][1] =
+                              !customCategorias[index][1];
+                          if (!filtros.contains(customCategorias[index][0])) {
+                            filtros.add(customCategorias[index][0]);
+                          } else {
+                            filtros.remove(customCategorias[index][0]);
+                          }
+                        });
                       },
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       shape: RoundedRectangleBorder(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:weebooks2/models/ebook.dart';
@@ -6,6 +7,7 @@ import 'package:weebooks2/models/livro.dart';
 import 'package:weebooks2/models/meta.dart';
 import 'package:weebooks2/models/estatisticas.dart';
 import 'package:weebooks2/services/auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class DatabaseService {
   // coleção de usernames
@@ -109,16 +111,31 @@ class DatabaseService {
           return false;
         });
       } else {
+        // bool isEmpty = (livro.status == []);
+        int pageCount = 0;
+        int increment = 0;
+        List remove = [];
+        for (var item in livros) {
+          List list = item['status'];
+          if (list.isEmpty) {
+            remove.add(item);
+            recentes.removeWhere((element) => element['id'] == item['id']);
+            pageCount = -item['pageCount'];
+            increment = -1;
+          }
+        }
+        for (var item in remove) {
+          livros.remove(item);
+        }
+
         return userDatabase.set({
           'biblioteca': {
-            'livros': livros.isEmpty
-                ? FieldValue.arrayUnion([livro.toJson()])
-                : livros,
+            'livros': livros,
             'categorias': [categorias],
-            'recentes': recentes.isEmpty
-                ? FieldValue.arrayUnion([livro.toJson()])
-                : recentes
-          }
+            'recentes': recentes,
+          },
+          'paginasLidas': {'livros': FieldValue.increment(pageCount)},
+          'numeroLidos': {'livros': FieldValue.increment(increment)},
         }, SetOptions(merge: true)).then((value) {
           print("Livro, recente adicionados!");
 
@@ -132,11 +149,11 @@ class DatabaseService {
     });
   }
 
-  Future<dynamic> addEbook(Ebook ebook) async {
+  Future<dynamic> addEbook(Ebook ebook, File file) async {
     DocumentReference userDatabase =
         (userCollection.doc(AuthService().getUserInfo().uid));
 
-    return await userDatabase.get().then((value) {
+    return await userDatabase.get().then((value) async {
       List ebooks = [];
       bool ebookExiste = false;
       try {
@@ -152,23 +169,6 @@ class DatabaseService {
       } catch (e) {
         print('ADD_EBOOK: EBOOKS - ' + e.toString());
       }
-
-      // List recentes = [];
-      // try {
-      //   recentes = value.get(FieldPath(['biblioteca', 'recentes']));
-      //   for (var rec in recentes) {
-      //     if (rec['id'] == livro.id) {
-      //       recentes.remove(rec);
-      //       break;
-      //     }
-      //   }
-      //   if (recentes.length == 10) {
-      //     recentes = recentes.sublist(1);
-      //   }
-      //   recentes.add(livro.toJson());
-      // } catch (e) {
-      //   print('ADD_BOOK: RECENTES - ' + e.toString());
-      // }
 
       Map categorias = {};
       try {
@@ -191,14 +191,24 @@ class DatabaseService {
           categorias[sts.categoria] = [ebook.title];
         }
       }
+      print(categorias);
+
+      if (!ebookExiste) {
+        print("N EXISTE");
+        try {
+          await firebase_storage.FirebaseStorage.instance
+              .ref(ebook.path)
+              .putFile(file);
+        } catch (e) {
+          print('ADD_EBOOK_FIREBASE_STORAGE: ' + e.toString());
+          return false;
+        }
+      }
 
       if (!ebookExiste) {
         return userDatabase.set({
           'biblioteca': {
-            'livros': FieldValue.arrayUnion([ebook.toJson()]),
-            // 'recentes': recentes.isEmpty
-            //     ? FieldValue.arrayUnion([livro.toJson()])
-            //     : recentes,
+            'ebooks': FieldValue.arrayUnion([ebook.toJson()]),
             'categoriasE': [categorias],
           },
           'paginasLidas': {'ebooks': FieldValue.increment(ebook.pageCount)},
@@ -211,16 +221,28 @@ class DatabaseService {
           return false;
         });
       } else {
+        int pageCount = 0;
+        int increment = 0;
+        List remove = [];
+        for (var item in ebooks) {
+          List list = item['status'];
+          if (list.isEmpty) {
+            remove.add(item);
+            pageCount = -item['pageCount'];
+            increment = -1;
+          }
+        }
+        for (var item in remove) {
+          ebooks.remove(item);
+        }
+
         return userDatabase.set({
           'biblioteca': {
-            'livros': ebooks.isEmpty
-                ? FieldValue.arrayUnion([ebook.toJson()])
-                : ebooks,
+            'ebooks': ebooks,
             'categoriasE': [categorias],
-            // 'recentes': recentes.isEmpty
-            //     ? FieldValue.arrayUnion([livro.toJson()])
-            //     : recentes
-          }
+          },
+          'paginasLidas': {'ebooks': FieldValue.increment(pageCount)},
+          'numeroLidos': {'ebooks': FieldValue.increment(increment)},
         }, SetOptions(merge: true)).then((value) {
           print("Ebook, categorias adicionados!");
 
@@ -443,6 +465,46 @@ class DatabaseService {
       print("CLEAR_BUSCAS_RECENTES: " + error.toString());
       return false;
     });
+  }
+
+  Future<bool> atualizarEbookMarkings(Ebook ebook) async {
+    DocumentReference userDatabase =
+        (userCollection.doc(AuthService().getUserInfo().uid));
+    // print(ebook.markings);
+    List aux = await userCollection
+        .doc(AuthService().getUserInfo().uid)
+        .get()
+        .then((value) {
+      List listaEbooks = value.get(FieldPath(['biblioteca', 'ebooks']));
+      for (var i = 0; i < listaEbooks.length; i++) {
+        Ebook aux = Ebook.fromJson(listaEbooks[i]);
+        if (aux.title == ebook.title) {
+          aux.markings = ebook.markings;
+          aux.markings.sort();
+          listaEbooks[i] = aux.toJson();
+          return listaEbooks;
+        }
+      }
+      return null;
+    }).catchError((error) {
+      print('ATUALIZAR_EBOOK_MARKING_EBOOK_BY_NAME: ' + error.toString());
+      return null;
+    });
+
+    if (aux != null) {
+      return await userDatabase.set({
+        'biblioteca': {
+          'ebooks': aux,
+        }
+      }, SetOptions(merge: true)).then((value) {
+        print("Ebook Marking Editado");
+        return true;
+      }).catchError((error) {
+        print("ATUALIZAR_EBOOK_MARKING: " + error.toString());
+        return false;
+      });
+    }
+    return false;
   }
 }
 

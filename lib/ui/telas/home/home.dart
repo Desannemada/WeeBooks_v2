@@ -7,12 +7,10 @@ import 'package:provider/provider.dart';
 import 'package:weebooks2/_view_models/home_view_model.dart';
 import 'package:weebooks2/_view_models/user_view_model.dart';
 import 'package:weebooks2/models/ebook.dart';
-import 'package:weebooks2/models/status.dart';
 import 'package:weebooks2/models/user.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:weebooks2/services/auth.dart';
-import 'package:weebooks2/services/database.dart';
 import 'package:weebooks2/ui/components/ebook/ebookViewer.dart';
 import 'package:weebooks2/ui/shared/defaultMessageDialog.dart';
 import 'package:weebooks2/ui/shared/defaultScaffold.dart';
@@ -25,6 +23,7 @@ import 'package:weebooks2/ui/telas/home/widgets/homeButtonAnimation.dart';
 import 'package:weebooks2/values/icons.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:weebooks2/values/values.dart';
+import 'package:weebooks2/ui/shared/defaultValidateEmailDialog.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -34,7 +33,6 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> with TickerProviderStateMixin {
   final AuthService _auth = AuthService();
-  final DatabaseService _data = DatabaseService();
 
   List<AnimationController> _controllers = [];
   List<AnimationController> get controllers => _controllers;
@@ -73,7 +71,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
       children: [
         DefaultScaffold(
           actions: [
-            //TESTE BUTTON
+            // TESTE BUTTON
             // IconButton(
             //   icon: Icon(Icons.announcement),
             //   onPressed: () => Navigator.push(
@@ -95,12 +93,14 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                                 await FilePicker.platform.pickFiles();
                             if (result != null) {
                               File file = File(result.files.single.path);
-                              String fileName = path
-                                  .basename(file.path)
-                                  .replaceAll('.pdf', '');
+                              String fileName;
 
                               if (file.path.contains('.pdf')) {
                                 print('pdf');
+                                fileName = path
+                                    .basename(file.path)
+                                    .replaceAll('.pdf', '');
+
                                 Ebook ebook = new Ebook();
                                 setState(() => isLoading = true);
                                 Ebook res =
@@ -111,25 +111,27 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                                   ebook.status = [];
                                 }
                                 homeModel.setCurrentEbook(ebook);
-                                // if (!widget.showStatus) {
-                                //   _data
-                                //       .atualizarBuscasRecentes(widget.livro)
-                                //       .then((value) =>
-                                //           uModel.getUserData(type: 4));
-                                // }
+                                homeModel.setCurrentEbookFile(file);
+                                homeModel.setShowEbookPerfil(
+                                    res != null ? true : false);
                                 setState(() => isLoading = false);
-
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => EbookViewer(
                                       file: file,
-                                      showBook: res != null ? true : false,
                                       width: MediaQuery.of(context).size.width,
                                     ),
                                   ),
                                 );
-                              } else if (file.path.contains('.epub')) {
-                                print('epub');
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => DefaultMessageDialog(
+                                    title: "Disponível somente para pdfs",
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                  ),
+                                );
                               }
                             }
                           },
@@ -203,7 +205,16 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
           leadingWidget: Biblioteca(),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: indexAtual,
+            showUnselectedLabels: true,
+            unselectedItemColor: Colors.white.withOpacity(0.5),
             onTap: (value) {
+              if (indexAtual != 1 &&
+                  value == 0 &&
+                  (homeModel.bibliotecaWidget is ConteudoBibliotecaLivros ||
+                      homeModel.bibliotecaWidget is ConteudoBibliotecaEbooks)) {
+                print("Teste");
+                homeModel.setBibliotecaWidget(Biblioteca());
+              }
               // if (value != 1) {
               setState(() => indexAtual = value);
               // }
@@ -243,7 +254,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                       !showVerifyDialog && !usuario.emailVerified
                           ? Container(
                               color: Colors.black.withOpacity(0.5),
-                              child: DefaultMessageDialog(
+                              child: DefaultValidateEmailDialog(
                                 title: "Verifique seu email",
                                 onPressed: () =>
                                     setState(() => showVerifyDialog = true),
