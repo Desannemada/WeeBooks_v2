@@ -27,6 +27,9 @@ Desta forma, abre-se espaço para inovação, uma ferramenta que integre diversa
 #### Uma pequena amostra interativa de como poderá vir a ser o produto final:
 > <a href="https://www.figma.com/file/2m0NmFM8qcF38daJI2rcuW/WeeBooks?node-id=0%3A1">Protipação Atual e Futura</a>
 
+## Release:
+#### Disponível na seção releases as versões arm64-v8a, armeabi-v7a e x86_64.
+
 ## Instalação:
 #### Para rodar o aplicativo será necessário: 
 1. Instalar o framework seguindo os passos em: https://flutter.dev/
