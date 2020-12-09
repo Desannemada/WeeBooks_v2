@@ -285,6 +285,32 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
             },
           ),
         ),
+        homeModel.showLontra
+            ? Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.black.withOpacity(0.5),
+                child: Dialog(
+                  child: Container(
+                    height: 200,
+                    width: 100,
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("LONTRA!"),
+                        RaisedButton(
+                          onPressed: () {
+                            homeModel.setShowLontra(false);
+                          },
+                          child: Text("Ok valeu, tchau"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            : Container(),
       ],
     );
   }

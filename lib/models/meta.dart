@@ -1,7 +1,7 @@
 class Metas {
-  final MetaDiaria metaDiaria;
-  final MetaMensal metaMensal;
-  final MetaAnual metaAnual;
+  MetaDiaria metaDiaria;
+  MetaMensal metaMensal;
+  MetaAnual metaAnual;
 
   Metas({this.metaMensal, this.metaAnual, this.metaDiaria});
 
@@ -33,9 +33,9 @@ class Metas {
 }
 
 class Meta {
-  final int metaAtual;
-  final int tipo;
-  final int metaDefinida;
+  int metaAtual;
+  int tipo;
+  int metaDefinida;
 
   Meta({
     this.metaAtual,

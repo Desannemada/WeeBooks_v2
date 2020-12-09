@@ -105,6 +105,12 @@ class HomeViewModel with ChangeNotifier {
 
   //----------------------------------------------------------------------------------------------------------------------
 
+  bool showLontra = false;
+  void setShowLontra(bool aux) {
+    showLontra = aux;
+    notifyListeners();
+  }
+
   String formatNumber(int number) {
     return NumberFormat.compactCurrency(decimalDigits: 0, symbol: '')
         .format(number);

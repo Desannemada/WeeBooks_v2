@@ -23,7 +23,7 @@ class Status extends StatelessWidget {
   }
 }
 
-class SpecificInfo extends StatelessWidget {
+class SpecificInfo extends StatefulWidget {
   SpecificInfo({
     @required this.id,
     @required this.title,
@@ -31,6 +31,13 @@ class SpecificInfo extends StatelessWidget {
 
   final int id;
   final String title;
+
+  @override
+  _SpecificInfoState createState() => _SpecificInfoState();
+}
+
+class _SpecificInfoState extends State<SpecificInfo> {
+  int lontra = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +50,7 @@ class SpecificInfo extends StatelessWidget {
     final hModel = Provider.of<HomeViewModel>(context);
     final uModel = Provider.of<UserViewModel>(context);
     Estatisticas info =
-        id == 0 ? uModel.userTotalLidos : uModel.userPaginasLidas;
+        widget.id == 0 ? uModel.userTotalLidos : uModel.userPaginasLidas;
 
     return Container(
       height: 90,
@@ -56,11 +63,12 @@ class SpecificInfo extends StatelessWidget {
               image: DecorationImage(
                 image: AssetImage("assets/status/status.webp"),
                 fit: BoxFit.cover,
-                alignment:
-                    id == 0 ? Alignment.topCenter : Alignment.bottomCenter,
+                alignment: widget.id == 0
+                    ? Alignment.topCenter
+                    : Alignment.bottomCenter,
               ),
               borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(id == 0 ? 0 : 7)),
+                  bottom: Radius.circular(widget.id == 0 ? 0 : 7)),
             ),
             child: FractionallySizedBox(
               heightFactor: 0.5,
@@ -74,7 +82,7 @@ class SpecificInfo extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  title,
+                  widget.title,
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -98,38 +106,51 @@ class SpecificInfo extends StatelessWidget {
               options.length,
               (index) => Align(
                 alignment: Alignment.bottomCenter,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  elevation: 3,
-                  child: Container(
-                    height: 50,
-                    width: 130,
-                    decoration: BoxDecoration(
+                child: GestureDetector(
+                  onTap: () {
+                    if (index == 1 && widget.id == 0) {
+                      setState(() {
+                        lontra += 1;
+                        if (lontra == 7) {
+                          lontra = 0;
+                          hModel.setShowLontra(true);
+                        }
+                      });
+                    }
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(7),
-                      color: Colors.white,
                     ),
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      children: [
-                        Icon(
-                          options[index][0],
-                          color: options[index][1],
-                        ),
-                        SizedBox(width: 5),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              hModel.formatNumber(index == 0
-                                  ? info.livros
-                                  : /*index == 1 ? info.fics :*/ info.ebooks),
-                              style: TextStyle(fontSize: 18),
+                    elevation: 3,
+                    child: Container(
+                      height: 50,
+                      width: 130,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(7),
+                        color: Colors.white,
+                      ),
+                      padding: EdgeInsets.all(10),
+                      child: Row(
+                        children: [
+                          Icon(
+                            options[index][0],
+                            color: options[index][1],
+                          ),
+                          SizedBox(width: 5),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                hModel.formatNumber(index == 0
+                                    ? info.livros
+                                    : /*index == 1 ? info.fics :*/ info.ebooks),
+                                style: TextStyle(fontSize: 18),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
