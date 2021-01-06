@@ -172,7 +172,7 @@ class _LivroPerfilAddDialogState extends State<LivroPerfilAddDialog> {
                             builder: (context) => DefaultMessageDialog(
                               title: value
                                   ? "Adicionado com sucesso!"
-                                  : "Ocorreu um erro, tenten novamente!",
+                                  : "Ocorreu um erro, tente novamente!",
                               onPressed: () {
                                 if (!value) {
                                   hModel.currentLivro.status.removeLast();

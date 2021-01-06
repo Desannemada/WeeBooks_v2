@@ -52,19 +52,28 @@ class UserViewModel with ChangeNotifier {
     DateTime now = DateTime.now();
 
     if (aux != formatter.format(now)) {
+      // print("Setting Data...");
       await prefs.setString('data', formatter.format(now));
     }
 
+    bool hasChanged = false;
     if (data.day != now.day) {
       metas.metaDiaria.metaAtual = 0;
+      hasChanged = true;
     }
     if (data.month != now.month) {
       metas.metaMensal.metaAtual = 0;
+      hasChanged = true;
     }
     if (data.year != now.year) {
       metas.metaAnual.metaAtual = 0;
+      hasChanged = true;
     }
-
+    if (hasChanged) {
+      final DatabaseService _data = DatabaseService();
+      await _data.atualizarMeta(metas);
+    }
+    // print(metas.toJson().toString());
     return metas;
   }
 

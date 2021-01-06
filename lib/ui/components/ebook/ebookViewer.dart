@@ -426,7 +426,7 @@ class _EbookViewerState extends State<EbookViewer> {
                       } else if (value == 3) {
                         double offset = scrollControllerEbook.offset;
                         int page = ((offset / widget.width) + 1).round();
-                        if (page < numPages) {
+                        if (page <= numPages) {
                           scrollControllerEbook.jumpTo((widget.width * page));
                         }
                       } else if (value == 4) {
