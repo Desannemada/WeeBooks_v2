@@ -2,8 +2,8 @@
 
 ## Intructions
 
-#### 1. Install GIT (https://git-scm.com/), NPM (https://www.npmjs.com/get-npm) and MongoDB (https://www.mongodb.com/try/download/community?tck=docs_server):
-```Note: While installing MongoDB, check the option to also install MongoDB Compass. If there's no option you can download it here: https://www.mongodb.com/try/download/compass```
+#### 1. Install <a href="https://git-scm.com/">GIT</a>, <a href="https://www.npmjs.com/get-npm">NPM</a> and <a href="https://www.mongodb.com/try/download/community?tck=docs_server">MongoDB</a>:
+```Note: While installing MongoDB, check the option to also install MongoDB Compass. If there's no option you can download it``` <a href="https://www.mongodb.com/try/download/compass">here</a>
 
 #### 2. Install YARN with the command:
 
